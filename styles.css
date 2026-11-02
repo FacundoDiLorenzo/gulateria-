@@ -368,10 +368,23 @@ address { font-style: normal; font-size: 1.25rem; font-weight: 500; margin: 1.4r
 .hours tr.today th, .hours tr.today td { font-weight: 700; }
 .hours tr.today th::after { content: "Hoy"; margin-left: .6rem; font-size: .72rem; font-weight: 700; color: var(--strawberry-deep); background: #EAEAEA; padding: .15rem .5rem; border-radius: 999px; vertical-align: .1em; }
 .map { position: sticky; top: 6rem; }
-.map iframe {
-  width: 100%; aspect-ratio: 4 / 5; max-height: 620px; border: 0; display: block;
-  border-radius: var(--radius); background: var(--wafer);
-  box-shadow: var(--shadow);
+.map-card {
+  position: relative; display: block; overflow: hidden;
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  color: var(--ink); text-decoration: none;
+  transition: transform 200ms var(--ease-out), box-shadow 200ms ease;
+}
+.map-card:active { transform: scale(0.99); }
+.map-art { display: block; width: 100%; aspect-ratio: 4 / 5; max-height: 620px; height: auto; }
+.map-label {
+  position: absolute; left: 1rem; right: 1rem; bottom: 1rem;
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4rem 1rem;
+  background: var(--paper); border-radius: 14px; padding: .9rem 1.1rem;
+  font-weight: 500; box-shadow: 0 6px 20px -10px rgb(0 0 0 / .35);
+}
+.map-label b { font-weight: 700; }
+@media (hover: hover) and (pointer: fine) {
+  .map-card:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgb(0 0 0 / .06), 0 20px 40px -16px rgb(0 0 0 / .3); }
 }
 
 /* ─── Contact ────────────────────────────────────────────── */
@@ -415,7 +428,7 @@ address { font-style: normal; font-size: 1.25rem; font-weight: 500; margin: 1.4r
   .step:nth-of-type(1), .step:nth-of-type(2) { border-right: 0; border-bottom: 1px solid var(--line); }
   .step:nth-of-type(3) { grid-column: 1; grid-row: auto; }
   .map { position: static; }
-  .map iframe { aspect-ratio: 4 / 3; }
+  .map-art { aspect-ratio: 4 / 3; }
 }
 @media (max-width: 640px) {
   .nav nav a:not(.btn) { display: none; }
