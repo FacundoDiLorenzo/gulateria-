@@ -55,7 +55,6 @@
     <nav aria-label="Secciones">
       <ol class="menu-links" role="list">
         <li><a href="#inicio" data-go="inicio"><small>Portada</small>Inicio</a></li>
-        <li><a href="#nosotros" data-go="nosotros"><small>Quiénes somos</small>Nosotros</a></li>
         <li><a href="#reservas" data-go="reservas"><small>Mesa online</small>Reservar</a></li>
         <li><a href="#ubicacion" data-go="ubicacion"><small>Mapa y horario</small>Ubicación</a></li>
         <li><a href="#contacto" data-go="contacto"><small>Escríbenos</small>Contacto</a></li>
@@ -66,7 +65,8 @@
 
   <main class="views" data-views>
     <!-- PRESENTACIÓN -->
-    <section id="inicio" class="view hero" data-view="inicio" aria-label="Portada">
+    <section id="inicio" class="view home" data-view="inicio" aria-label="Portada">
+      <div class="hero">
       <div class="hero-copy">
         <h1>
           <span class="line">Helado artesano,</span>
@@ -119,9 +119,9 @@
           </defs>
         </svg>
       </div>
-    </section>
+    </div>
 
-    <section id="nosotros" class="view about" data-view="nosotros" aria-label="Nosotros" hidden>
+    <div id="nosotros" class="about" aria-label="Nosotros">
       <div class="about-intro">
         <h2>Lo que no lleva también importa.</h2>
         <p>En Gulateria hacemos el helado a mano con fruta de temporada, frutos secos de primera, especias y algún licor escogido. Lo servimos en cucurucho o en tarrina, en un local tranquilo y familiar.</p>
@@ -132,6 +132,7 @@
         <li><span>Sin</span> grasas hidrogenadas</li>
       </ul>
 
+    </div>
     </section>
 
     <!-- RESERVAS -->

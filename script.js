@@ -499,9 +499,15 @@ const views = Object.fromEntries($$("[data-view]").map((v) => [v.dataset.view, v
 const viewsEl = $("[data-views]");
 let current = "inicio";
 let leaveTimer = 0;
-const TITLES = { inicio: "Gulateria · Heladería artesanal en Málaga", nosotros: "Nosotros · Gulateria", reservas: "Reservar mesa · Gulateria", ubicacion: "Ubicación y horario · Gulateria", contacto: "Contacto · Gulateria" };
+const TITLES = { inicio: "Gulateria · Heladería artesanal en Málaga", reservas: "Reservar mesa · Gulateria", ubicacion: "Ubicación y horario · Gulateria", contacto: "Contacto · Gulateria" };
 
 function go(name, { push = true, instant = false } = {}) {
+  // Nosotros vive dentro de la portada: ir a la portada y bajar hasta el bloque
+  if (name === "nosotros") {
+    go("inicio", { push, instant });
+    setTimeout(() => $("#nosotros").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }), instant ? 0 : 500);
+    return;
+  }
   if (!views[name]) name = "inicio";
   closeMenu();
   if (push && location.hash !== `#${name}`) history.pushState(null, "", `#${name}`);
@@ -541,7 +547,7 @@ document.addEventListener("click", (e) => {
   const a = e.target.closest('a[href^="#"]');
   if (!a) return;
   const name = a.getAttribute("href").slice(1);
-  if (!views[name]) return;
+  if (!views[name] && name !== "nosotros") return;
   e.preventDefault();
   go(name);
 });

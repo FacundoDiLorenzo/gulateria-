@@ -536,7 +536,7 @@ address { font-style: normal; font-size: 1.25rem; font-weight: 500; margin: 1.4r
 /* ─── Views: one section at a time ───────────────────────── */
 .views { display: grid; }
 .view { grid-area: 1 / 1; min-width: 0; min-height: calc(100svh - 64px); }
-.view.hero { align-content: center; }
+.home .hero { min-height: calc(100svh - 64px); align-content: center; }
 .views[data-busy] { pointer-events: none; }
 
 /* Gradient crossfade: the outgoing words dissolve through a moving gradient
@@ -636,4 +636,4 @@ body.menu-open .logo { color: #fff; }
 body.menu-open .burger { background: rgb(255 255 255 / .14); color: #fff; }
 body.menu-open [data-nav-cta] { visibility: hidden; }
 
-.view.about { align-content: center; align-items: center; }
+.home .about { align-items: center; border-top: 1px solid var(--line); }
