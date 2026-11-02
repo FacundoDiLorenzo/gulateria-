@@ -88,7 +88,7 @@ html { scrollbar-color: #8A8A8A var(--wafer); }
 
 /* ─── Nav ────────────────────────────────────────────────── */
 .nav {
-  position: sticky; top: 0; z-index: 20;
+  position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   padding: calc(.8rem + env(safe-area-inset-top, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px)) .8rem max(var(--gutter), env(safe-area-inset-left, 0px));
   background: rgb(255 255 255 / .86);
@@ -103,12 +103,6 @@ html { scrollbar-color: #8A8A8A var(--wafer); }
   letter-spacing: -0.03em; color: var(--ink); text-decoration: none;
 }
 .logo-mark { width: 22px; height: 28px; }
-.nav nav { display: flex; align-items: center; gap: clamp(.9rem, 2.5vw, 2rem); }
-.nav nav a:not(.btn) { position: relative; color: var(--ink-soft); text-decoration: none; font-weight: 500; transition: color 150ms ease; }
-.nav nav a:not(.btn)::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 2px; background: currentColor; transform: scaleX(0); transition: transform 240ms var(--ease-out); }
-.nav nav a[aria-current="true"] { color: var(--ink); }
-.nav nav a[aria-current="true"]::after { transform: scaleX(1); }
-@media (hover: hover) and (pointer: fine) { .nav nav a:not(.btn):hover { color: var(--ink); } }
 
 /* ─── Hero ───────────────────────────────────────────────── */
 .hero {
@@ -185,7 +179,6 @@ h1 .line:nth-child(2) { color: var(--strawberry-deep); font-style: italic; font-
   max-width: var(--max); margin: 0 auto;
   padding: clamp(3rem, 8vw, 6rem) var(--gutter);
   display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 5rem) clamp(2rem, 6vw, 6rem);
-  border-top: 1px solid var(--line);
 }
 .about-intro p { margin-top: 1.4rem; max-width: 36rem; font-size: 1.15rem; color: var(--ink-soft); }
 .without { list-style: none; margin: 0; padding: 0; align-self: end; }
@@ -432,7 +425,6 @@ address { font-style: normal; font-size: 1.25rem; font-weight: 500; margin: 1.4r
   .map-art { aspect-ratio: 4 / 3; }
 }
 @media (max-width: 640px) {
-  .nav nav a:not(.btn) { display: none; }
   .quick { grid-template-columns: 1fr 1fr; border-radius: 22px; gap: 0; }
   .quick-field { padding: .6rem .9rem; border-right: 0; border-bottom: 1px solid var(--line); }
   .quick-field:nth-of-type(1) { grid-column: 1 / -1; }
@@ -502,7 +494,6 @@ address { font-style: normal; font-size: 1.25rem; font-weight: 500; margin: 1.4r
   .dock[data-show] { opacity: 1; pointer-events: auto; }
   .ticket.is-in .tc-1, .ticket.is-in .tc-2 { animation: fade 250ms ease both; }
   .pill.is-open::before { animation: none; }
-  .nav nav a:not(.btn)::after { transition: none; }
 }
 
 /* ─── Scroll reveals: each section gets its own gesture ──── */
@@ -541,3 +532,106 @@ address { font-style: normal; font-size: 1.25rem; font-weight: 500; margin: 1.4r
   .js .cone-stage.is-floating .cone { animation: none; }
   .cone-stage { transform: none !important; }
 }
+
+/* ─── Views: one section at a time ───────────────────────── */
+.views { display: grid; }
+.view { grid-area: 1 / 1; min-width: 0; min-height: calc(100svh - 64px); }
+.view.hero { align-content: center; }
+.views[data-busy] { pointer-events: none; }
+
+/* Gradient crossfade: the outgoing words dissolve through a moving gradient
+   while the incoming ones are revealed by it, top to bottom. */
+.view.is-entering, .view.is-leaving {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 38%, transparent 62%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 38%, transparent 62%, transparent 100%);
+  -webkit-mask-size: 100% 300%; mask-size: 100% 300%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+.view.is-entering { animation: view-in 640ms var(--ease-out) both; }
+.view.is-leaving  { animation: view-out 420ms var(--ease-in-out) both; z-index: 1; }
+@keyframes view-in {
+  from { opacity: 0; filter: blur(10px); transform: translateY(14px); -webkit-mask-position: 0 100%; mask-position: 0 100%; }
+  to   { opacity: 1; filter: blur(0);    transform: none;             -webkit-mask-position: 0 0;    mask-position: 0 0; }
+}
+@keyframes view-out {
+  from { opacity: 1; filter: blur(0);   -webkit-mask-position: 0 0;    mask-position: 0 0; }
+  to   { opacity: 0; filter: blur(8px); -webkit-mask-position: 0 100%; mask-position: 0 100%; transform: translateY(-10px); }
+}
+/* The entering view's headline gets its own gradient sweep through the letters */
+.view.is-entering h1, .view.is-entering h2 {
+  background: linear-gradient(100deg, var(--ink) 0 45%, #B5B5B5 50%, var(--ink) 55% 100%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: word-sweep 900ms var(--ease-out) 120ms both;
+}
+.view.reserve.is-entering h2 { background-image: linear-gradient(100deg, #fff 0 45%, #6F6F6F 50%, #fff 55% 100%); }
+.view.is-entering h1 .line:nth-child(2) { color: transparent; }
+@keyframes word-sweep { from { background-position: 100% 0; } to { background-position: 0 0; } }
+
+/* ─── Burger ─────────────────────────────────────────────── */
+.nav-actions { display: flex; align-items: center; gap: .6rem; }
+.burger {
+  position: relative; width: 44px; height: 44px; border: 0; border-radius: 50%;
+  background: var(--wafer); cursor: pointer; color: var(--ink);
+  transition: transform 160ms var(--ease-out), background-color 200ms ease;
+}
+.burger:active { transform: scale(0.94); }
+.burger span {
+  position: absolute; left: 13px; right: 13px; height: 2px; border-radius: 2px; background: currentColor;
+  transition: transform 300ms var(--ease-out), opacity 180ms ease;
+}
+.burger span:nth-child(1) { top: 15px; } .burger span:nth-child(2) { top: 21px; } .burger span:nth-child(3) { top: 27px; }
+.burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scaleX(.3); }
+.burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+@media (hover: hover) and (pointer: fine) { .burger:hover { background: var(--line); } }
+
+/* ─── Menu panel: grows out of the burger ────────────────── */
+.menu-panel {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: calc(5.5rem + env(safe-area-inset-top, 0px)) var(--gutter) calc(2rem + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: #fff;
+  clip-path: circle(0 at calc(100% - var(--gutter) - 22px) 34px);
+  transition: clip-path 380ms var(--ease-in-out);
+  overscroll-behavior: contain; overflow-y: auto;
+}
+.menu-panel.is-open { clip-path: circle(150% at calc(100% - var(--gutter) - 22px) 34px); transition: clip-path 620ms var(--ease-drawer); }
+.menu-links { list-style: none; margin: 0 auto; padding: 0; width: 100%; max-width: calc(var(--max) - 2 * var(--gutter)); }
+.menu-links li { border-bottom: 1px solid rgb(255 255 255 / .12); opacity: 0; transform: translateY(18px); filter: blur(6px); transition: opacity 200ms ease, transform 200ms ease, filter 200ms ease; }
+.menu-panel.is-open .menu-links li { opacity: 1; transform: none; filter: none; transition: opacity 500ms var(--ease-out), transform 600ms var(--ease-out), filter 500ms var(--ease-out); transition-delay: calc(var(--i, 0) * 55ms + 140ms); }
+.menu-links a {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  padding: clamp(.7rem, 2vw, 1.1rem) 0; color: #fff; text-decoration: none;
+  font: 700 clamp(2.4rem, 7.5vw, 4.75rem)/1 "Fraunces", serif; font-variation-settings: "SOFT" 100; letter-spacing: -0.03em;
+  transition: color 200ms ease, transform 240ms var(--ease-out);
+}
+.menu-links a small { order: 2; font: 500 .95rem/1.2 "Figtree", sans-serif; letter-spacing: 0; color: #9A9A9A; }
+.menu-links a[aria-current="page"] { font-style: italic; }
+.menu-links a[aria-current="page"]::after { content: ""; order: 1; flex: 1; height: 2px; margin: 0 1rem; align-self: center; background: rgb(255 255 255 / .25); }
+@media (hover: hover) and (pointer: fine) { .menu-links a:hover { transform: translateX(10px); } .menu-links a:hover small { color: #fff; } }
+.menu-links a:active { transform: scale(0.98); }
+.menu-foot { margin: 2rem auto 0; width: 100%; max-width: calc(var(--max) - 2 * var(--gutter)); color: #9A9A9A; font-size: .95rem; }
+body.menu-open { overflow: hidden; }
+
+@media (max-width: 640px) {
+  .menu-links a small { display: none; }
+  .nav-actions .btn-small { padding: 0 .95rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view.is-entering { animation: fade 300ms ease both; -webkit-mask-image: none; mask-image: none; }
+  .view.is-leaving { animation: fade-out 200ms ease both; -webkit-mask-image: none; mask-image: none; }
+  .view.is-entering h1, .view.is-entering h2 { animation: none; background: none; color: inherit; }
+  .menu-panel, .menu-panel.is-open { clip-path: none; transition: opacity 200ms ease; opacity: 0; }
+  .menu-panel.is-open { opacity: 1; }
+  .menu-links li, .menu-panel.is-open .menu-links li { transform: none; filter: none; }
+}
+@keyframes fade-out { to { opacity: 0; } }
+
+/* Nav sits over the open menu and inverts */
+.nav, .logo, .burger { transition: background-color 300ms ease, color 300ms ease, box-shadow 200ms ease, transform 160ms var(--ease-out); }
+body.menu-open .nav { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+body.menu-open .logo { color: #fff; }
+body.menu-open .burger { background: rgb(255 255 255 / .14); color: #fff; }
+body.menu-open [data-nav-cta] { visibility: hidden; }

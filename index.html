@@ -43,17 +43,30 @@
       <svg class="logo-mark" viewBox="0 0 32 40" aria-hidden="true"><circle cx="16" cy="13" r="10" fill="var(--strawberry)"/><path d="M7 19 16 38 25 19Z" fill="var(--caramel)"/><path d="M10 23h12M12.5 28h7" stroke="var(--caramel-deep)" stroke-width="1.6" stroke-linecap="round"/></svg>
       Gulateria
     </a>
-    <nav aria-label="Principal">
-      <a href="#nosotros" data-section="nosotros">Nosotros</a>
-      <a href="#ubicacion" data-section="ubicacion">Ubicación</a>
-      <a href="#contacto" data-section="contacto">Contacto</a>
-      <a class="btn btn-small" href="#reservas">Reservar</a>
-    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-small" href="#reservas" data-nav-cta>Reservar</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú" data-burger>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </header>
 
-  <main id="inicio">
+  <div class="menu-panel" id="menu" data-menu hidden>
+    <nav aria-label="Secciones">
+      <ol class="menu-links" role="list">
+        <li><a href="#inicio" data-go="inicio"><small>Portada</small>Inicio</a></li>
+        <li><a href="#nosotros" data-go="nosotros"><small>Quiénes somos</small>Nosotros</a></li>
+        <li><a href="#reservas" data-go="reservas"><small>Mesa online</small>Reservar</a></li>
+        <li><a href="#ubicacion" data-go="ubicacion"><small>Mapa y horario</small>Ubicación</a></li>
+        <li><a href="#contacto" data-go="contacto"><small>Escríbenos</small>Contacto</a></li>
+      </ol>
+    </nav>
+    <p class="menu-foot"><span data-menu-status></span> · C. Realenga de San Luis, 12</p>
+  </div>
+
+  <main class="views" data-views>
     <!-- PRESENTACIÓN -->
-    <section class="hero">
+    <section id="inicio" class="view hero" data-view="inicio" aria-label="Portada">
       <div class="hero-copy">
         <h1>
           <span class="line">Helado artesano,</span>
@@ -108,7 +121,7 @@
       </div>
     </section>
 
-    <section id="nosotros" class="about">
+    <section id="nosotros" class="view about" data-view="nosotros" aria-label="Nosotros" hidden>
       <div class="about-intro">
         <h2>Lo que no lleva también importa.</h2>
         <p>En Gulateria hacemos el helado a mano con fruta de temporada, frutos secos de primera, especias y algún licor escogido. Lo servimos en cucurucho o en tarrina, en un local tranquilo y familiar.</p>
@@ -143,7 +156,7 @@
     </section>
 
     <!-- RESERVAS -->
-    <section id="reservas" class="reserve" aria-labelledby="reserve-title">
+    <section id="reservas" class="view reserve" data-view="reservas" aria-labelledby="reserve-title" hidden>
       <div class="reserve-head">
         <h2 id="reserve-title">Reserva tu mesa</h2>
         <p>Elige día, hora y cuántos sois. Te confirmamos la reserva por WhatsApp o teléfono.</p>
@@ -236,7 +249,7 @@
     </section>
 
     <!-- UBICACIÓN -->
-    <section id="ubicacion" class="where" aria-labelledby="where-title">
+    <section id="ubicacion" class="view where" data-view="ubicacion" aria-labelledby="where-title" hidden>
       <div class="where-info">
         <h2 id="where-title">Dónde estamos</h2>
         <address>
@@ -285,7 +298,7 @@
     </section>
 
     <!-- CONTACTO -->
-    <section id="contacto" class="contact" aria-labelledby="contact-title">
+    <section id="contacto" class="view contact" data-view="contacto" aria-labelledby="contact-title" hidden>
       <h2 id="contact-title">Hablemos</h2>
       <p class="contact-lead">Encargos, cumpleaños, grupos o lo que sea. Te respondemos rápido.</p>
       <ul class="contact-list" role="list" data-contact-list>

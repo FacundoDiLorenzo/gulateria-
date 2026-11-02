@@ -95,9 +95,8 @@ quick.addEventListener("submit", (e) => {
   selectDate(qDate.value, false);
   selectTime(Number(qTime.value));
   setPeople(Number(qPeople.value));
-  const target = $("#reservas");
-  target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-  setTimeout(() => $('[name="name"]').focus({ preventScroll: true }), reduceMotion ? 0 : 550);
+  go("reservas");
+  setTimeout(() => $('[name="name"]').focus({ preventScroll: true }), reduceMotion ? 50 : 700);
 });
 
 /* ─── Formulario completo ─── */
@@ -494,3 +493,82 @@ function sprinkles() {
 }
 const _showTicket = showTicket;
 showTicket = function (data, mode) { _showTicket(data, mode); sprinkles(); };
+
+/* ─── Portada + secciones (una vista a la vez) ─── */
+const views = Object.fromEntries($$("[data-view]").map((v) => [v.dataset.view, v]));
+const viewsEl = $("[data-views]");
+let current = "inicio";
+let leaveTimer = 0;
+const TITLES = { inicio: "Gulateria · Heladería artesanal en Málaga", nosotros: "Nosotros · Gulateria", reservas: "Reservar mesa · Gulateria", ubicacion: "Ubicación y horario · Gulateria", contacto: "Contacto · Gulateria" };
+
+function go(name, { push = true, instant = false } = {}) {
+  if (!views[name]) name = "inicio";
+  closeMenu();
+  if (push && location.hash !== `#${name}`) history.pushState(null, "", `#${name}`);
+  document.title = TITLES[name];
+  $$("[data-go]").forEach((a) => a.setAttribute("aria-current", a.dataset.go === name ? "page" : "false"));
+  $("[data-nav-cta]").hidden = name === "reservas";
+  if (name === current) { if (!instant) window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" }); return; }
+  const from = views[current], to = views[name];
+  current = name;
+
+  // finish any transition still running
+  clearTimeout(leaveTimer);
+  $$(".view.is-leaving").forEach((v) => { v.classList.remove("is-leaving"); v.hidden = true; });
+  $$(".view.is-entering").forEach((v) => v.classList.remove("is-entering"));
+
+  window.scrollTo(0, 0);
+  to.hidden = false;
+  if (instant) { from.hidden = true; return; }
+  viewsEl.toggleAttribute("data-busy", true);
+  from.classList.add("is-leaving");
+  void to.offsetWidth;
+  to.classList.add("is-entering");
+  leaveTimer = setTimeout(() => {
+    from.classList.remove("is-leaving"); from.hidden = true;
+    viewsEl.removeAttribute("data-busy");
+  }, reduceMotion ? 220 : 440);
+  to.addEventListener("animationend", function done(e) {
+    if (e.target !== to) return;
+    to.classList.remove("is-entering");
+    to.removeEventListener("animationend", done);
+  });
+  const heading = $("h1, h2", to);
+  if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+}
+
+document.addEventListener("click", (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const name = a.getAttribute("href").slice(1);
+  if (!views[name]) return;
+  e.preventDefault();
+  go(name);
+});
+window.addEventListener("popstate", () => go(location.hash.slice(1) || "inicio", { push: false }));
+
+/* Menú de tres barras */
+const burger = $("[data-burger]"), menu = $("[data-menu]");
+$$(".menu-links li").forEach((li, i) => li.style.setProperty("--i", i));
+let menuTimer = 0;
+function openMenu() {
+  clearTimeout(menuTimer);
+  $("[data-menu-status]").textContent = openStatus().text;
+  menu.hidden = false; void menu.offsetWidth;
+  menu.classList.add("is-open");
+  document.body.classList.add("menu-open");
+  burger.setAttribute("aria-expanded", "true"); burger.setAttribute("aria-label", "Cerrar menú");
+  setTimeout(() => $('.menu-links a[aria-current="page"], .menu-links a', menu).focus({ preventScroll: true }), 120);
+}
+function closeMenu() {
+  if (!menu.classList.contains("is-open")) return;
+  menu.classList.remove("is-open");
+  document.body.classList.remove("menu-open");
+  burger.setAttribute("aria-expanded", "false"); burger.setAttribute("aria-label", "Abrir menú");
+  menuTimer = setTimeout(() => { menu.hidden = true; }, reduceMotion ? 200 : 400);
+}
+burger.addEventListener("click", () => (menu.classList.contains("is-open") ? closeMenu() : openMenu()));
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menu.classList.contains("is-open")) { closeMenu(); burger.focus(); } });
+
+// Vista inicial según la URL
+go(location.hash.slice(1) || "inicio", { push: false, instant: true });
