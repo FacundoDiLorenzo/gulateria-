@@ -181,7 +181,7 @@ h1 .line:nth-child(2) { color: var(--strawberry-deep); font-style: italic; font-
   display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 5rem) clamp(2rem, 6vw, 6rem);
 }
 .about-intro p { margin-top: 1.4rem; max-width: 36rem; font-size: 1.15rem; color: var(--ink-soft); }
-.without { list-style: none; margin: 0; padding: 0; align-self: end; }
+.without { list-style: none; margin: 0; padding: 0; align-self: center; }
 .without li {
   font: 600 clamp(1.5rem, 3.2vw, 2.25rem)/1.15 "Fraunces", serif; font-variation-settings: "SOFT" 100;
   letter-spacing: -0.02em; padding: .7rem 0; border-bottom: 1px solid var(--line);
@@ -635,3 +635,5 @@ body.menu-open .nav { background: transparent; -webkit-backdrop-filter: none; ba
 body.menu-open .logo { color: #fff; }
 body.menu-open .burger { background: rgb(255 255 255 / .14); color: #fff; }
 body.menu-open [data-nav-cta] { visibility: hidden; }
+
+.view.about { align-content: center; align-items: center; }
