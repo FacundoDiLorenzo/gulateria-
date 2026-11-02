@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..900,100&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js")</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -88,7 +89,7 @@
         </div>
       </div>
 
-      <div class="cone-stage" aria-hidden="true">
+      <div class="cone-stage" aria-hidden="true" data-cone>
         <svg class="cone" viewBox="0 0 360 480">
           <g class="cone-body">
             <path d="M92 250 180 470 268 250Z" fill="var(--caramel)"/>
@@ -272,13 +273,13 @@
               <path d="M-20 440 L420 420" stroke-width="10"/>
               <path d="M30 -20 L60 520M360 -20 L340 520M-20 60 L420 80" stroke-width="6"/>
             </g>
-            <g transform="translate(200 250)">
+            <g transform="translate(200 250)"><g class="map-pin">
               <circle r="34" fill="#2B2B2B" opacity=".08"/>
               <path d="M0 6s-22-19-22-36a22 22 0 1 1 44 0C22-13 0 6 0 6Z" fill="#2B2B2B"/>
               <circle cy="-30" r="8" fill="#fff"/>
-            </g>
+            </g></g>
           </svg>
-          <span class="map-label">Gulateria · C. Realenga de San Luis, 12 <b>Abrir en Google Maps →</b></span>
+          <span class="map-label">Gulateria · C. Realenga de San Luis, 12 <b>Abrir en Google Maps <span class="nudge" aria-hidden="true">→</span></b></span>
         </a>
       </div>
     </section>

@@ -278,8 +278,8 @@ h1 .line:nth-child(2) { color: var(--strawberry-deep); font-style: italic; font-
 @media (hover: hover) and (pointer: fine) {
   .day:not([aria-checked="true"]):hover, .slot:not([aria-checked="true"]):hover { box-shadow: inset 0 0 0 1.5px var(--ink-soft); }
 }
-.slots.is-swapping { animation: swap 260ms var(--ease-out); }
-@keyframes swap { from { opacity: .25; filter: blur(3px); transform: translateY(4px); } }
+.slots.is-swapping .slot { animation: slot-in 280ms var(--ease-out) both; animation-delay: calc(min(var(--i, 0), 14) * 16ms); }
+@keyframes slot-in { from { opacity: 0; transform: translateY(6px) scale(.96); } }
 
 .stepper { display: flex; align-items: center; gap: .9rem; }
 .stepper-btn {
@@ -503,4 +503,41 @@ address { font-style: normal; font-size: 1.25rem; font-weight: 500; margin: 1.4r
   .ticket.is-in .tc-1, .ticket.is-in .tc-2 { animation: fade 250ms ease both; }
   .pill.is-open::before { animation: none; }
   .nav nav a:not(.btn)::after { transition: none; }
+}
+
+/* ─── Scroll reveals: each section gets its own gesture ──── */
+.js [data-reveal] { transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out), filter 700ms var(--ease-out), clip-path 800ms var(--ease-in-out); transition-delay: calc(var(--i, 0) * 70ms); }
+.js [data-reveal="rise"]:not(.is-in) { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+.js [data-reveal="wipe"]:not(.is-in) { clip-path: inset(0 100% 0 0); }
+.js [data-reveal="wipe"] { clip-path: inset(0 0 0 0); }
+.js [data-reveal="card"]:not(.is-in) { opacity: 0; transform: translateY(28px) scale(.97); }
+.js [data-reveal="row"]:not(.is-in) { opacity: 0; transform: translateX(-10px); }
+.js [data-reveal="map"] { clip-path: inset(0 0 0 0 round var(--radius)); }
+.js [data-reveal="map"]:not(.is-in) { clip-path: inset(0 0 100% 0 round var(--radius)); }
+
+/* Menu: the swatches drop in like scoops once the list is in view */
+.js .menu-list li .menu-dot { transform-origin: 50% 100%; }
+.js .menu-list li.is-in .menu-dot { animation: scoop-drop 700ms var(--ease-out) both; animation-delay: calc(var(--i, 0) * 90ms + 150ms); }
+
+/* Map pin lands after the card opens */
+.map-pin { transform-box: fill-box; transform-origin: 50% 100%; }
+.js .map-card:not(.is-in) .map-pin { opacity: 0; }
+.js .map-card.is-in .map-pin { animation: scoop-drop 720ms var(--ease-out) 520ms both; }
+.nudge { display: inline-block; transition: transform 200ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .map-card:hover .nudge { transform: translateX(4px); } }
+
+/* Hero cone: idle float once it has landed, plus pointer tilt (set from JS) */
+.cone-stage { will-change: transform; }
+.js .cone-stage.is-floating .cone { animation: float 5.5s var(--ease-in-out) infinite alternate; }
+@keyframes float { from { transform: translateY(0) rotate(-1.2deg); } to { transform: translateY(-10px) rotate(1.2deg); } }
+
+/* Sprinkles on confirmation */
+.sprinkle { position: absolute; left: 50%; top: 92px; width: 8px; height: 3px; border-radius: 2px; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] { transition: opacity 300ms ease; transform: none !important; filter: none !important; clip-path: none !important; }
+  .js .menu-list li.is-in .menu-dot, .js .map-card.is-in .map-pin, .slots.is-swapping .slot { animation: none; }
+  .js .map-card:not(.is-in) .map-pin { opacity: 1; }
+  .js .cone-stage.is-floating .cone { animation: none; }
+  .cone-stage { transform: none !important; }
 }

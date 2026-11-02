@@ -25,7 +25,6 @@ const HOURS = {
   6: [870, 1530], // sábado 14:30–01:30
 };
 
-document.documentElement.classList.add("js");
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -131,7 +130,7 @@ function renderSlots(animate) {
   const slots = slotsFor(dateByIso[state.date]);
   if (!slots.includes(state.time)) state.time = null;
   slotsEl.innerHTML = slots.length
-    ? slots.map((m) => `<button type="button" class="slot" role="radio" aria-checked="${m === state.time}" tabindex="${m === state.time ? 0 : -1}" data-time="${m}">${fmtMin(m)}</button>`).join("")
+    ? slots.map((m, i) => `<button type="button" class="slot" role="radio" aria-checked="${m === state.time}" tabindex="${m === state.time ? 0 : -1}" data-time="${m}" style="--i:${i}">${fmtMin(m)}</button>`).join("")
     : `<p class="slots-empty">No quedan horas para hoy. Prueba otro día.</p>`;
   if (state.time == null && slots.length) $(".slot", slotsEl).tabIndex = 0;
   if (animate && !reduceMotion) {
@@ -415,3 +414,83 @@ const dockObs = new IntersectionObserver((entries) => {
   $("a", dock).tabIndex = show ? 0 : -1;
 });
 [[quick, "quick"], [$("#reservas"), "reserve"], [$(".foot"), "foot"]].forEach(([el, k]) => { el.dataset.dockWatch = k; dockObs.observe(el); });
+
+/* ─── Animaciones al hacer scroll ─── */
+function tag(sel, kind, stagger = false) {
+  $$(sel).forEach((el, i) => { el.dataset.reveal = kind; if (stagger) el.style.setProperty("--i", i); });
+}
+tag("main section:not(.hero) h2", "rise");
+tag(".about-intro p, .reserve-head p, .contact-lead, .where address", "rise");
+tag(".without li", "wipe", true);
+tag(".menu", "card");
+tag(".menu-list li", "row", true);
+tag(".reserve-shell", "card");
+tag(".hours tbody tr", "row", true);
+tag(".map-card", "map");
+tag(".contact-list li", "card", true);
+
+// Clipped elements have no visible area to intersect, so watch their parent instead.
+const watchers = new Map();
+$$("[data-reveal]").forEach((el) => {
+  if (el.closest("[hidden]")) { el.classList.add("is-in"); return; }
+  const clipped = el.dataset.reveal === "wipe" || el.dataset.reveal === "map";
+  const target = clipped ? el.parentElement : el;
+  if (!watchers.has(target)) watchers.set(target, []);
+  watchers.get(target).push(el);
+});
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    watchers.get(e.target).forEach((el) => el.classList.add("is-in"));
+    revealObs.unobserve(e.target);
+  });
+}, { rootMargin: "0px 0px -12% 0px", threshold: 0.05 });
+watchers.forEach((_, target) => revealObs.observe(target));
+
+/* ─── Cucurucho: flota y se inclina hacia el cursor ─── */
+(function cone() {
+  const stage = $("[data-cone]");
+  if (!stage || reduceMotion) return;
+  setTimeout(() => stage.classList.add("is-floating"), 1900);
+  if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  const hero = $(".hero");
+  let tx = 0, ty = 0, x = 0, y = 0, raf = 0, visible = true;
+  hero.addEventListener("pointermove", (e) => {
+    const r = stage.getBoundingClientRect();
+    tx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / 500));
+    ty = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / 500));
+    if (!raf) raf = requestAnimationFrame(tick);
+  });
+  hero.addEventListener("pointerleave", () => { tx = 0; ty = 0; if (!raf) raf = requestAnimationFrame(tick); });
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(hero);
+  function tick() {
+    // spring-ish follow: ease toward the target each frame
+    x += (tx - x) * 0.08; y += (ty - y) * 0.08;
+    stage.style.transform = `translate(${x * 12}px, ${y * 8}px) rotate(${x * 6}deg)`;
+    raf = visible && (Math.abs(tx - x) > 0.001 || Math.abs(ty - y) > 0.001) ? requestAnimationFrame(tick) : 0;
+  }
+})();
+
+/* ─── Confeti de virutas al confirmar ─── */
+function sprinkles() {
+  if (reduceMotion || !ticket.animate) return;
+  const colors = ["#2B2B2B", "#9A9A9A", "#D6D6D6", "#555555"];
+  for (let i = 0; i < 22; i++) {
+    const s = document.createElement("span");
+    s.className = "sprinkle";
+    s.style.background = colors[i % colors.length];
+    ticket.append(s);
+    const angle = (Math.PI * 2 * i) / 22 + Math.random() * 0.4;
+    const dist = 70 + Math.random() * 90;
+    const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist * 0.8 - 20;
+    const rot = Math.random() * 540 - 270;
+    s.animate([
+      { transform: "translate(-50%, 0) rotate(0deg)", opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx}px), ${dy}px) rotate(${rot}deg)`, opacity: 1, offset: 0.7 },
+      { transform: `translate(calc(-50% + ${dx * 1.1}px), ${dy + 40}px) rotate(${rot * 1.2}deg)`, opacity: 0 },
+    ], { duration: 1100 + Math.random() * 300, delay: 380, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "both" })
+      .finished.then(() => s.remove());
+  }
+}
+const _showTicket = showTicket;
+showTicket = function (data, mode) { _showTicket(data, mode); sprinkles(); };
