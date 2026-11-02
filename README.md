@@ -1,7 +1,17 @@
 # Gulateria
 
-One-page website for Gulateria, an artisan ice cream shop in Málaga (C. Realenga de San Luis, 12, Carretera de Cádiz).
+Web de una página para Gulateria, heladería artesanal en Málaga (C. Realenga de San Luis, 12, Carretera de Cádiz).
 
-It is plain HTML and CSS with no build step: open `index.html` in a browser, or publish the repo with GitHub Pages (Settings → Pages → deploy from branch, root folder).
+Secciones: presentación, reservas, ubicación (mapa y horario) y contacto.
 
-To update the hours, flavors or address, edit `index.html`. The hours appear twice: in the visible table and in the `application/ld+json` block at the top (used by Google).
+HTML, CSS y JavaScript sin dependencias ni compilación: abre `index.html` en el navegador o publícalo con GitHub Pages (Settings → Pages → deploy from branch, carpeta raíz).
+
+## Conectar las reservas
+
+Por defecto el formulario funciona como vista previa y **no envía nada**: muestra el ticket con un aviso. Para que las reservas lleguen al local, edita el bloque `CONFIG` al principio de `script.js`:
+
+- `whatsapp`: número con prefijo, solo dígitos (ej. `34600000000`). Cada reserva abre WhatsApp con el mensaje ya escrito para el local.
+- `formEndpoint`: URL de un servicio de formularios (Formspree, Getform…). Las reservas llegan por email.
+- `phone` / `email`: si los rellenas, aparecen en la sección de contacto.
+
+Se pueden usar los dos a la vez. El horario de reservas sale de `HOURS` en `script.js` (la última hora reservable es una hora antes del cierre); si cambia el horario, actualízalo ahí, en la tabla de `index.html` y en el bloque `application/ld+json`.

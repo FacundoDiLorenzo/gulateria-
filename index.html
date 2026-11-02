@@ -4,16 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gulateria · Heladería artesanal en Málaga</title>
-  <meta name="description" content="Gulateria, heladería artesanal en Carretera de Cádiz, Málaga. Helados hechos con ingredientes frescos, sin conservantes ni colorantes artificiales.">
+  <meta name="description" content="Gulateria, heladería artesanal en Carretera de Cádiz, Málaga. Reserva tu mesa online. Helados sin conservantes ni colorantes artificiales.">
+  <meta name="theme-color" content="#FBF3E6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..900,100&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "IceCreamShop",
     "name": "Gulateria Heladería Artesanal",
+    "acceptsReservations": true,
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "C. Realenga de San Luis, 12",
@@ -22,6 +24,7 @@
       "addressCountry": "ES"
     },
     "sameAs": ["https://www.instagram.com/gulateria__"],
+    "aggregateRating": {"@type": "AggregateRating", "ratingValue": "5", "reviewCount": "254"},
     "openingHoursSpecification": [
       {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "15:00", "closes": "00:30"},
       {"@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "15:00", "closes": "01:30"},
@@ -32,97 +35,263 @@
   </script>
 </head>
 <body>
-  <header class="nav">
-    <a class="logo" href="#">Gulateria</a>
-    <nav>
-      <a href="#sabores">Sabores</a>
-      <a href="#horario">Horario</a>
-      <a href="#visitanos">Visítanos</a>
+  <a class="skip" href="#reservas">Saltar a reservas</a>
+
+  <header class="nav" data-nav>
+    <a class="logo" href="#inicio" aria-label="Gulateria, inicio">
+      <svg class="logo-mark" viewBox="0 0 32 40" aria-hidden="true"><circle cx="16" cy="13" r="10" fill="var(--strawberry)"/><path d="M7 19 16 38 25 19Z" fill="var(--caramel)"/><path d="M10 23h12M12.5 28h7" stroke="var(--caramel-deep)" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Gulateria
+    </a>
+    <nav aria-label="Principal">
+      <a href="#nosotros">Nosotros</a>
+      <a href="#ubicacion">Ubicación</a>
+      <a href="#contacto">Contacto</a>
+      <a class="btn btn-small" href="#reservas">Reservar</a>
     </nav>
   </header>
 
-  <main>
+  <main id="inicio">
+    <!-- PRESENTACIÓN -->
     <section class="hero">
-      <div class="hero-text">
-        <p class="eyebrow">Heladería artesanal · Málaga</p>
-        <h1>Helado hecho a mano, cada día.</h1>
-        <p class="lead">Ingredientes frescos y técnicas tradicionales. Sin conservantes, sin colorantes artificiales y sin grasas hidrogenadas.</p>
-        <div class="cta">
-          <a class="btn primary" href="#visitanos">Cómo llegar</a>
-          <a class="btn" href="https://www.instagram.com/gulateria__" target="_blank" rel="noopener">Instagram</a>
+      <div class="hero-copy">
+        <h1>
+          <span class="line">Helado artesano,</span>
+          <span class="line">recién hecho</span>
+          <span class="line">en Carretera de&nbsp;Cádiz.</span>
+        </h1>
+        <p class="lead">Ingredientes frescos y recetas de siempre, sin conservantes ni colorantes. Ahora puedes reservar tu mesa y venir directo a elegir sabor.</p>
+
+        <form class="quick" data-quick aria-label="Reserva rápida">
+          <label class="quick-field">
+            <span>Día</span>
+            <select name="date" data-quick-date></select>
+          </label>
+          <label class="quick-field">
+            <span>Hora</span>
+            <select name="time" data-quick-time></select>
+          </label>
+          <label class="quick-field quick-people">
+            <span>Personas</span>
+            <select name="people" data-quick-people></select>
+          </label>
+          <button class="btn btn-primary" type="submit">Reservar mesa</button>
+        </form>
+
+        <a class="proof" href="https://www.google.com/maps/search/?api=1&amp;query=Gulateria%20Heladeria%20Artesanal&amp;query_place_id=ChIJB69xTUX5cg0R_f9zSk-pq3I" target="_blank" rel="noopener">
+          <span class="stars" aria-hidden="true">
+            <svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg>
+          </span>
+          <span><strong>5,0 en Google</strong> · 254 opiniones</span>
+        </a>
+      </div>
+
+      <div class="cone-stage" aria-hidden="true">
+        <svg class="cone" viewBox="0 0 360 480">
+          <g class="cone-body">
+            <path d="M92 250 180 470 268 250Z" fill="var(--caramel)"/>
+            <path d="M92 250 180 470 268 250Z" fill="url(#waffle)"/>
+          </g>
+          <g class="scoop scoop-1"><circle cx="122" cy="232" r="66" fill="var(--pistachio)"/><path d="M68 252c14 18 28 6 40 20s30 4 40-6" fill="none" stroke="var(--pistachio-deep)" stroke-width="5" stroke-linecap="round" opacity=".35"/></g>
+          <g class="scoop scoop-2"><circle cx="238" cy="232" r="66" fill="var(--choc)"/><path d="M196 262c12 10 26 2 36 12s28 6 44-8" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round" opacity=".18"/></g>
+          <g class="scoop scoop-3"><circle cx="180" cy="140" r="74" fill="var(--strawberry)"/><path d="M120 170c14 14 30 0 44 12s32 2 48-10" fill="none" stroke="var(--strawberry-deep)" stroke-width="5" stroke-linecap="round" opacity=".35"/><circle cx="152" cy="108" r="12" fill="#fff" opacity=".28"/></g>
+          <path class="drip" d="M236 290c0 18 8 26 8 36a8 8 0 0 1-16 0c0-10 8-18 8-36Z" fill="var(--choc)"/>
+          <defs>
+            <pattern id="waffle" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <path d="M0 0H22M0 0V22" stroke="var(--caramel-deep)" stroke-width="3" opacity=".55"/>
+            </pattern>
+          </defs>
+        </svg>
+      </div>
+    </section>
+
+    <section id="nosotros" class="about">
+      <div class="about-intro">
+        <h2>Lo que no lleva también importa.</h2>
+        <p>En Gulateria hacemos el helado a mano con fruta de temporada, frutos secos de primera, especias y algún licor escogido. Lo servimos en cucurucho o en tarrina, en un local tranquilo y familiar.</p>
+      </div>
+      <ul class="without" role="list">
+        <li><span>Sin</span> conservantes</li>
+        <li><span>Sin</span> colorantes artificiales</li>
+        <li><span>Sin</span> grasas hidrogenadas</li>
+      </ul>
+
+      <div class="menu">
+        <h3>Los que no fallan</h3>
+        <ol class="menu-list" role="list">
+          <li style="--swatch: var(--choc)">
+            <span class="menu-dot" aria-hidden="true"></span>
+            <span class="menu-name">Chocolate belga</span>
+            <span class="menu-note">Cacao intenso, textura densa.</span>
+          </li>
+          <li style="--swatch: var(--vanilla)">
+            <span class="menu-dot" aria-hidden="true"></span>
+            <span class="menu-name">Vainilla de Madagascar</span>
+            <span class="menu-note">Vaina de verdad, nada de esencia.</span>
+          </li>
+          <li style="--swatch: var(--caramel)">
+            <span class="menu-dot" aria-hidden="true"></span>
+            <span class="menu-name">Dulce de leche argentino</span>
+            <span class="menu-note">El clásico de la casa.</span>
+          </li>
+        </ol>
+        <p class="menu-more">Y cada semana, sabores de temporada. Los anunciamos en <a href="https://www.instagram.com/gulateria__" target="_blank" rel="noopener">Instagram</a>.</p>
+      </div>
+    </section>
+
+    <!-- RESERVAS -->
+    <section id="reservas" class="reserve" aria-labelledby="reserve-title">
+      <div class="reserve-head">
+        <h2 id="reserve-title">Reserva tu mesa</h2>
+        <p>Elige día, hora y cuántos sois. Te confirmamos la reserva por WhatsApp o teléfono.</p>
+      </div>
+
+      <div class="reserve-shell" data-reserve-shell>
+        <form class="reserve-form" data-reserve novalidate>
+          <fieldset class="step">
+            <legend>Cuándo</legend>
+            <div class="days" data-days role="radiogroup" aria-label="Día"></div>
+            <div class="slots-wrap">
+              <p class="slots-label" id="slots-label">Hora</p>
+              <div class="slots" data-slots role="radiogroup" aria-labelledby="slots-label"></div>
+            </div>
+            <p class="field-error" data-error="when" role="alert"></p>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend>Cuántos</legend>
+            <div class="stepper">
+              <button type="button" class="stepper-btn" data-people-minus aria-label="Quitar una persona">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10"/></svg>
+              </button>
+              <output class="stepper-value" data-people-value aria-live="polite">2</output>
+              <button type="button" class="stepper-btn" data-people-plus aria-label="Añadir una persona">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10M10 5v10"/></svg>
+              </button>
+              <span class="stepper-unit" data-people-unit>personas</span>
+            </div>
+            <p class="hint">¿Más de 10? Escríbenos y lo organizamos.</p>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend>Tus datos</legend>
+            <div class="fields">
+              <label class="field">
+                <span>Nombre</span>
+                <input name="name" autocomplete="name" required placeholder="Cómo te llamas">
+                <em class="field-error" data-error="name"></em>
+              </label>
+              <label class="field">
+                <span>Teléfono</span>
+                <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="600 000 000">
+                <em class="field-error" data-error="phone"></em>
+              </label>
+              <label class="field field-wide">
+                <span>Comentarios <small>(opcional)</small></span>
+                <textarea name="notes" rows="2" placeholder="Cumpleaños, carrito de bebé, alergias…"></textarea>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="reserve-submit">
+            <p class="summary" data-summary aria-live="polite"></p>
+            <button class="btn btn-primary btn-large" type="submit" data-submit>
+              <span class="btn-label">Confirmar reserva</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="ticket" data-ticket hidden tabindex="-1">
+          <svg class="ticket-check" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/><path d="m14 25 7 7 13-15"/></svg>
+          <h3 data-ticket-title>¡Reserva enviada!</h3>
+          <dl class="ticket-rows">
+            <div><dt>Día</dt><dd data-t="date"></dd></div>
+            <div><dt>Hora</dt><dd data-t="time"></dd></div>
+            <div><dt>Personas</dt><dd data-t="people"></dd></div>
+            <div><dt>A nombre de</dt><dd data-t="name"></dd></div>
+          </dl>
+          <p class="ticket-note" data-ticket-note>Te escribiremos para confirmarla. Si algo cambia, avísanos por Instagram.</p>
+          <button class="btn btn-ghost" type="button" data-new>Hacer otra reserva</button>
         </div>
-        <p class="rating"><span aria-hidden="true">★★★★★</span> 5,0 en Google · más de 250 opiniones</p>
-      </div>
-      <div class="scoops" aria-hidden="true">
-        <span class="scoop s1"></span>
-        <span class="scoop s2"></span>
-        <span class="scoop s3"></span>
-        <span class="cone"></span>
       </div>
     </section>
 
-    <section id="sabores" class="section">
-      <h2>Nuestros clásicos</h2>
-      <p class="section-lead">Además de los de siempre, vamos cambiando con fruta de temporada, frutos secos premium, especias y licores seleccionados.</p>
-      <div class="cards">
-        <article class="card">
-          <span class="dot choc"></span>
-          <h3>Chocolate belga</h3>
-          <p>Intenso, cremoso y con todo el sabor del cacao.</p>
-        </article>
-        <article class="card">
-          <span class="dot vain"></span>
-          <h3>Vainilla de Madagascar</h3>
-          <p>Vainilla de verdad, suave y aromática.</p>
-        </article>
-        <article class="card">
-          <span class="dot ddl"></span>
-          <h3>Dulce de leche argentino</h3>
-          <p>El de toda la vida, como en Argentina.</p>
-        </article>
-      </div>
-      <p class="formats">En cucurucho o en tarrina.</p>
-    </section>
+    <!-- UBICACIÓN -->
+    <section id="ubicacion" class="where" aria-labelledby="where-title">
+      <div class="where-info">
+        <h2 id="where-title">Dónde estamos</h2>
+        <address>
+          C. Realenga de San Luis, 12<br>
+          Carretera de Cádiz, 29004 Málaga
+        </address>
+        <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&amp;destination=Gulateria%20Heladeria%20Artesanal&amp;destination_place_id=ChIJB69xTUX5cg0R_f9zSk-pq3I" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10Z"/><circle cx="10" cy="8" r="2.2"/></svg>
+          Cómo llegar
+        </a>
 
-    <section id="horario" class="section alt">
-      <h2>Horario</h2>
-      <table class="hours">
-        <tbody>
-          <tr data-days="1,2,3,4"><th>Lunes a jueves</th><td>15:00 – 00:30</td></tr>
-          <tr data-days="5"><th>Viernes</th><td>15:00 – 01:30</td></tr>
-          <tr data-days="6"><th>Sábado</th><td>14:30 – 01:30</td></tr>
-          <tr data-days="0"><th>Domingo</th><td>14:30 – 00:30</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section id="visitanos" class="section">
-      <h2>Visítanos</h2>
-      <div class="visit">
-        <div>
-          <p class="address">C. Realenga de San Luis, 12<br>Carretera de Cádiz<br>29004 Málaga</p>
-          <p><a class="btn primary" href="https://www.google.com/maps/search/?api=1&amp;query=Gulateria%20Heladeria%20Artesanal&amp;query_place_id=ChIJB69xTUX5cg0R_f9zSk-pq3I" target="_blank" rel="noopener">Abrir en Google Maps</a></p>
-          <p>Síguenos en <a href="https://www.instagram.com/gulateria__" target="_blank" rel="noopener">@gulateria__</a> para ver los sabores del día.</p>
+        <div class="hours">
+          <h3>Horario</h3>
+          <p class="open-now" data-open-now></p>
+          <table>
+            <tbody>
+              <tr data-days="1,2,3,4"><th scope="row">Lunes a jueves</th><td>15:00 – 00:30</td></tr>
+              <tr data-days="5"><th scope="row">Viernes</th><td>15:00 – 01:30</td></tr>
+              <tr data-days="6"><th scope="row">Sábado</th><td>14:30 – 01:30</td></tr>
+              <tr data-days="0"><th scope="row">Domingo</th><td>14:30 – 00:30</td></tr>
+            </tbody>
+          </table>
         </div>
-        <iframe
-          title="Mapa de Gulateria"
+      </div>
+      <div class="map">
+        <iframe title="Mapa: Gulateria en C. Realenga de San Luis, 12, Málaga"
           src="https://www.google.com/maps?q=C.%20Realenga%20de%20San%20Luis%2012%2C%2029004%20M%C3%A1laga&amp;output=embed"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"></iframe>
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto" class="contact" aria-labelledby="contact-title">
+      <h2 id="contact-title">Hablemos</h2>
+      <p class="contact-lead">Encargos, cumpleaños, grupos o lo que sea. Te respondemos rápido.</p>
+      <ul class="contact-list" role="list" data-contact-list>
+        <li>
+          <a href="https://www.instagram.com/gulateria__" target="_blank" rel="noopener">
+            <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="4"/><circle cx="10" cy="10" r="3.2"/><circle cx="14.2" cy="5.8" r=".6" fill="currentColor"/></svg>
+            <span><strong>Instagram</strong>@gulateria__</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Gulateria%20Heladeria%20Artesanal&amp;destination_place_id=ChIJB69xTUX5cg0R_f9zSk-pq3I" target="_blank" rel="noopener">
+            <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10Z"/><circle cx="10" cy="8" r="2.2"/></svg>
+            <span><strong>Pásate</strong>C. Realenga de San Luis, 12</span>
+          </a>
+        </li>
+        <li data-contact="whatsapp" hidden>
+          <a href="#" target="_blank" rel="noopener">
+            <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 16.5 4.6 13A7 7 0 1 1 7 15.4Z"/><path d="M7.6 7.4c0 2.8 2.2 5 5 5l.9-1.4-1.6-.8-.8.8a3.5 3.5 0 0 1-1.9-1.9l.8-.8-.8-1.6Z"/></svg>
+            <span><strong>WhatsApp</strong><span data-contact-text></span></span>
+          </a>
+        </li>
+        <li data-contact="phone" hidden>
+          <a href="#">
+            <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h3l1.5 4-2 1.2a8 8 0 0 0 4.3 4.3l1.2-2 4 1.5v3a2 2 0 0 1-2 2A13 13 0 0 1 3 5a2 2 0 0 1 2-2Z"/></svg>
+            <span><strong>Teléfono</strong><span data-contact-text></span></span>
+          </a>
+        </li>
+        <li data-contact="email" hidden>
+          <a href="#">
+            <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4.5" width="15" height="11" rx="2"/><path d="m3 5.5 7 5.5 7-5.5"/></svg>
+            <span><strong>Email</strong><span data-contact-text></span></span>
+          </a>
+        </li>
+      </ul>
     </section>
   </main>
 
-  <footer>
-    <p>© <span id="year">2026</span> Gulateria · Heladería artesanal en Málaga</p>
+  <footer class="foot">
+    <p>Gulateria · Heladería artesanal · C. Realenga de San Luis, 12, Málaga</p>
+    <p>© <span data-year>2026</span></p>
   </footer>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    var today = new Date().getDay();
-    document.querySelectorAll('.hours tr').forEach(function (row) {
-      if (row.dataset.days.split(',').map(Number).indexOf(today) !== -1) row.classList.add('today');
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

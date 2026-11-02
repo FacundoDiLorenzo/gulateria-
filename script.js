@@ -1,0 +1,335 @@
+/* ───────────────────────────────────────────────────────────
+   CONFIGURACIÓN DEL LOCAL
+   Rellena lo que tengas. Lo que quede vacío no se muestra.
+   - whatsapp: número con prefijo, solo dígitos (ej. "34600000000").
+     Si lo pones, cada reserva abre WhatsApp con el mensaje ya escrito.
+   - formEndpoint: URL de Formspree, Getform, etc. Si lo pones,
+     las reservas se envían ahí (te llegan por email).
+   ─────────────────────────────────────────────────────────── */
+const CONFIG = {
+  whatsapp: "",
+  phone: "",
+  email: "",
+  formEndpoint: "",
+  maxPeople: 10,
+  slotMinutes: 30,
+  lastSlotBeforeCloseMin: 60,
+  daysAhead: 14,
+};
+
+/* Horario: [apertura, cierre] en minutos desde medianoche; cierre > 1440 = madrugada siguiente */
+const HOURS = {
+  0: [870, 1470], // domingo 14:30–00:30
+  1: [900, 1470], 2: [900, 1470], 3: [900, 1470], 4: [900, 1470], // lun–jue 15:00–00:30
+  5: [900, 1530], // viernes 15:00–01:30
+  6: [870, 1530], // sábado 14:30–01:30
+};
+
+document.documentElement.classList.add("js");
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+const DOW_LONG = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const MON = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const pad = (n) => String(n).padStart(2, "0");
+const fmtMin = (m) => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
+const isoDate = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+/* ─── Estado ─── */
+const state = { date: null, time: null, people: 2 };
+
+function upcomingDays() {
+  const out = [];
+  const start = new Date(); start.setHours(0, 0, 0, 0);
+  for (let i = 0; i < CONFIG.daysAhead; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    if (slotsFor(d).length) out.push(d);
+  }
+  return out;
+}
+
+function slotsFor(date) {
+  const [open, close] = HOURS[date.getDay()];
+  const last = close - CONFIG.lastSlotBeforeCloseMin;
+  const now = new Date();
+  const isToday = isoDate(date) === isoDate(now);
+  const minNow = now.getHours() * 60 + now.getMinutes() + 30;
+  const out = [];
+  for (let m = open; m <= last; m += CONFIG.slotMinutes) {
+    if (isToday && m < minNow) continue;
+    out.push(m);
+  }
+  return out;
+}
+
+function dayLabel(d, i) {
+  if (i === 0 && isoDate(d) === isoDate(new Date())) return `Hoy, ${d.getDate()} ${MON[d.getMonth()]}`;
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+  if (isoDate(d) === isoDate(tomorrow)) return `Mañana, ${d.getDate()} ${MON[d.getMonth()]}`;
+  return `${DOW[d.getDay()][0].toUpperCase() + DOW[d.getDay()].slice(1)} ${d.getDate()} ${MON[d.getMonth()]}`;
+}
+
+const days = upcomingDays();
+const dateByIso = Object.fromEntries(days.map((d) => [isoDate(d), d]));
+
+/* ─── Reserva rápida (hero) ─── */
+const quick = $("[data-quick]");
+const qDate = $("[data-quick-date]"), qTime = $("[data-quick-time]"), qPeople = $("[data-quick-people]");
+
+function fillQuickTimes() {
+  const slots = slotsFor(dateByIso[qDate.value]);
+  qTime.innerHTML = slots.map((m) => `<option value="${m}">${fmtMin(m)}</option>`).join("");
+  const pref = slots.find((m) => m >= 18 * 60) ?? slots[0];
+  if (state.time != null && slots.includes(state.time)) qTime.value = state.time;
+  else if (pref != null) qTime.value = pref;
+}
+qDate.innerHTML = days.map((d, i) => `<option value="${isoDate(d)}">${dayLabel(d, i)}</option>`).join("");
+qPeople.innerHTML = Array.from({ length: CONFIG.maxPeople }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("");
+qPeople.value = state.people;
+fillQuickTimes();
+qDate.addEventListener("change", fillQuickTimes);
+
+quick.addEventListener("submit", (e) => {
+  e.preventDefault();
+  selectDate(qDate.value, false);
+  selectTime(Number(qTime.value));
+  setPeople(Number(qPeople.value));
+  const target = $("#reservas");
+  target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  setTimeout(() => $('[name="name"]').focus({ preventScroll: true }), reduceMotion ? 0 : 550);
+});
+
+/* ─── Formulario completo ─── */
+const form = $("[data-reserve]");
+const daysEl = $("[data-days]");
+const slotsEl = $("[data-slots]");
+
+daysEl.innerHTML = days.map((d, i) => {
+  const today = i === 0 && isoDate(d) === isoDate(new Date());
+  return `<button type="button" class="day" role="radio" aria-checked="false" data-date="${isoDate(d)}"
+    aria-label="${today ? "Hoy, " : ""}${DOW_LONG[d.getDay()]} ${d.getDate()} de ${MON[d.getMonth()]}">
+    <small>${today ? "hoy" : DOW[d.getDay()]}</small><b>${d.getDate()}</b></button>`;
+}).join("");
+
+function selectDate(iso, animate = true) {
+  state.date = iso;
+  $$(".day", daysEl).forEach((b) => {
+    const on = b.dataset.date === iso;
+    b.setAttribute("aria-checked", on);
+    b.tabIndex = on ? 0 : -1;
+    if (on && b.scrollIntoView) {
+      const r = b.getBoundingClientRect(), p = daysEl.getBoundingClientRect();
+      if (r.left < p.left || r.right > p.right) daysEl.scrollTo({ left: b.offsetLeft - 8, behavior: reduceMotion ? "auto" : "smooth" });
+    }
+  });
+  renderSlots(animate);
+}
+
+function renderSlots(animate) {
+  const slots = slotsFor(dateByIso[state.date]);
+  if (!slots.includes(state.time)) state.time = null;
+  slotsEl.innerHTML = slots.length
+    ? slots.map((m) => `<button type="button" class="slot" role="radio" aria-checked="${m === state.time}" tabindex="${m === state.time ? 0 : -1}" data-time="${m}">${fmtMin(m)}</button>`).join("")
+    : `<p class="slots-empty">No quedan horas para hoy. Prueba otro día.</p>`;
+  if (state.time == null && slots.length) $(".slot", slotsEl).tabIndex = 0;
+  if (animate && !reduceMotion) {
+    slotsEl.classList.remove("is-swapping"); void slotsEl.offsetWidth; slotsEl.classList.add("is-swapping");
+  }
+  updateSummary();
+}
+
+function selectTime(m) {
+  state.time = m;
+  $$(".slot", slotsEl).forEach((b) => {
+    const on = Number(b.dataset.time) === m;
+    b.setAttribute("aria-checked", on); b.tabIndex = on ? 0 : -1;
+  });
+  setError("when", "");
+  updateSummary();
+}
+
+daysEl.addEventListener("click", (e) => { const b = e.target.closest(".day"); if (b) selectDate(b.dataset.date); });
+slotsEl.addEventListener("click", (e) => { const b = e.target.closest(".slot"); if (b) selectTime(Number(b.dataset.time)); });
+
+/* Teclado en grupos de radio: flechas */
+function arrowNav(container, sel, onPick) {
+  container.addEventListener("keydown", (e) => {
+    const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    if (!(e.key in keys)) return;
+    const items = $$(sel, container);
+    const i = items.indexOf(document.activeElement);
+    if (i < 0) return;
+    e.preventDefault();
+    const next = items[(i + keys[e.key] + items.length) % items.length];
+    next.focus(); onPick(next);
+  });
+}
+arrowNav(daysEl, ".day", (b) => selectDate(b.dataset.date));
+arrowNav(slotsEl, ".slot", (b) => selectTime(Number(b.dataset.time)));
+
+/* Personas */
+const pVal = $("[data-people-value]"), pMinus = $("[data-people-minus]"), pPlus = $("[data-people-plus]"), pUnit = $("[data-people-unit]");
+function setPeople(n) {
+  const prev = state.people;
+  state.people = Math.max(1, Math.min(CONFIG.maxPeople, n));
+  pVal.textContent = state.people;
+  pUnit.textContent = state.people === 1 ? "persona" : "personas";
+  pMinus.disabled = state.people <= 1;
+  pPlus.disabled = state.people >= CONFIG.maxPeople;
+  if (prev !== state.people && !reduceMotion) { pVal.classList.remove("bump"); void pVal.offsetWidth; pVal.classList.add("bump"); }
+  updateSummary();
+}
+pMinus.addEventListener("click", () => setPeople(state.people - 1));
+pPlus.addEventListener("click", () => setPeople(state.people + 1));
+
+/* Resumen */
+const summary = $("[data-summary]");
+function niceDate(iso) {
+  const d = dateByIso[iso];
+  return `${DOW_LONG[d.getDay()]} ${d.getDate()} de ${MON[d.getMonth()]}`;
+}
+function updateSummary() {
+  if (!state.date) return;
+  const t = state.time != null ? `a las <b>${fmtMin(state.time)}</b>` : "<span>elige una hora</span>";
+  summary.innerHTML = `Mesa para <b>${state.people}</b>, el <b>${niceDate(state.date)}</b> ${t}`;
+}
+
+/* Validación */
+function setError(key, msg) {
+  const el = $(`[data-error="${key}"]`);
+  if (el) el.textContent = msg;
+  const input = form.elements[key];
+  if (input && input.setAttribute) input.setAttribute("aria-invalid", msg ? "true" : "false");
+}
+function validate() {
+  let first = null;
+  const name = form.elements.name.value.trim();
+  const phone = form.elements.phone.value.replace(/[^\d+]/g, "");
+  if (state.time == null) { setError("when", "Elige una hora para tu reserva."); first ??= $(".slot", slotsEl) || daysEl; }
+  if (name.length < 2) { setError("name", "Escribe tu nombre para la reserva."); first ??= form.elements.name; } else setError("name", "");
+  if (phone.replace("+", "").length < 9) { setError("phone", "Necesitamos un teléfono de 9 cifras para confirmarte."); first ??= form.elements.phone; } else setError("phone", "");
+  if (first) first.focus();
+  return !first;
+}
+["name", "phone"].forEach((k) => form.elements[k].addEventListener("input", () => {
+  if (form.elements[k].getAttribute("aria-invalid") === "true") setError(k, "");
+}));
+
+/* Envío */
+const submitBtn = $("[data-submit]");
+const ticket = $("[data-ticket]");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
+
+  const data = {
+    fecha: state.date,
+    hora: fmtMin(state.time),
+    personas: state.people,
+    nombre: form.elements.name.value.trim(),
+    telefono: form.elements.phone.value.trim(),
+    comentarios: form.elements.notes.value.trim(),
+  };
+  submitBtn.setAttribute("aria-busy", "true");
+  let mode = "demo";
+
+  try {
+    if (CONFIG.formEndpoint) {
+      const res = await fetch(CONFIG.formEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ _subject: `Reserva Gulateria: ${data.nombre}, ${data.personas} pers.`, ...data }),
+      });
+      if (!res.ok) throw new Error("send failed");
+      mode = "sent";
+    }
+    if (CONFIG.whatsapp) {
+      const msg = `Hola Gulateria, quiero reservar mesa:\n• ${niceDate(state.date)} a las ${data.hora}\n• ${data.personas} personas\n• A nombre de ${data.nombre} (${data.telefono})${data.comentarios ? `\n• ${data.comentarios}` : ""}`;
+      window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+      mode = "whatsapp";
+    }
+  } catch {
+    submitBtn.removeAttribute("aria-busy");
+    setError("when", "No hemos podido enviar la reserva. Inténtalo otra vez o escríbenos por Instagram.");
+    return;
+  }
+
+  await new Promise((r) => setTimeout(r, mode === "demo" ? 450 : 0));
+  submitBtn.removeAttribute("aria-busy");
+  showTicket(data, mode);
+});
+
+function showTicket(data, mode) {
+  $('[data-t="date"]').textContent = niceDate(state.date);
+  $('[data-t="time"]').textContent = data.hora;
+  $('[data-t="people"]').textContent = data.personas;
+  $('[data-t="name"]').textContent = data.nombre;
+  const note = $("[data-ticket-note]");
+  note.classList.toggle("is-demo", mode === "demo");
+  note.textContent = {
+    whatsapp: "Termina de enviar el mensaje en WhatsApp y te confirmamos enseguida.",
+    sent: "Te escribiremos para confirmarla. Si algo cambia, avísanos por Instagram.",
+    demo: "Vista previa: el formulario aún no está conectado, así que esta reserva no le ha llegado al local.",
+  }[mode];
+  $("[data-ticket-title]").textContent = mode === "demo" ? "Así quedaría tu reserva" : mode === "whatsapp" ? "¡Ya casi está!" : "¡Reserva enviada!";
+  form.hidden = true;
+  ticket.hidden = false;
+  ticket.classList.remove("is-in"); void ticket.offsetWidth; ticket.classList.add("is-in");
+  ticket.focus({ preventScroll: true });
+  $("#reservas").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+}
+$("[data-new]").addEventListener("click", () => {
+  ticket.hidden = true; form.hidden = false; form.reset();
+  state.time = null; renderSlots(false); form.elements.name.focus();
+});
+
+/* ─── Horario: hoy y abierto ahora ─── */
+(function hours() {
+  const now = new Date();
+  const dow = now.getDay();
+  $$(".hours tr").forEach((r) => { if (r.dataset.days.split(",").map(Number).includes(dow)) r.classList.add("today"); });
+  const m = now.getHours() * 60 + now.getMinutes();
+  const yest = (dow + 6) % 7;
+  const [o, c] = HOURS[dow];
+  const openToday = m >= o && m < c;
+  const openFromYesterday = m + 1440 < HOURS[yest][1];
+  const el = $("[data-open-now]");
+  if (openToday || openFromYesterday) {
+    const closeAt = openToday ? c : HOURS[yest][1] - 1440;
+    el.textContent = `Abierto ahora · cierra a las ${fmtMin(closeAt)}`;
+    el.classList.add("is-open");
+  } else {
+    el.textContent = `Cerrado ahora · abre a las ${fmtMin(o)}`;
+  }
+})();
+
+/* ─── Contacto según configuración ─── */
+(function contact() {
+  const items = {
+    whatsapp: CONFIG.whatsapp && { href: `https://wa.me/${CONFIG.whatsapp}`, text: `+${CONFIG.whatsapp.replace(/^(\d{2})(\d{3})(\d{3})(\d+)/, "$1 $2 $3 $4")}` },
+    phone: CONFIG.phone && { href: `tel:${CONFIG.phone.replace(/\s/g, "")}`, text: CONFIG.phone },
+    email: CONFIG.email && { href: `mailto:${CONFIG.email}`, text: CONFIG.email },
+  };
+  for (const [k, v] of Object.entries(items)) {
+    if (!v) continue;
+    const li = $(`[data-contact="${k}"]`);
+    $("a", li).href = v.href;
+    $("[data-contact-text]", li).textContent = v.text;
+    li.hidden = false;
+  }
+})();
+
+/* ─── Nav con sombra al hacer scroll ─── */
+const nav = $("[data-nav]");
+const sentinel = document.createElement("div");
+sentinel.style.cssText = "position:absolute;top:0;height:1px;width:1px";
+document.body.prepend(sentinel);
+new IntersectionObserver(([e]) => nav.toggleAttribute("data-scrolled", !e.isIntersecting)).observe(sentinel);
+
+$("[data-year]").textContent = new Date().getFullYear();
+
+/* Estado inicial */
+selectDate(days[0] && isoDate(days[0]), false);
+setPeople(2);
