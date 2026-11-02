@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Gulateria · Heladería artesanal en Málaga</title>
   <meta name="description" content="Gulateria, heladería artesanal en Carretera de Cádiz, Málaga. Reserva tu mesa online. Helados sin conservantes ni colorantes artificiales.">
   <meta name="theme-color" content="#FFFFFF">
@@ -43,9 +43,9 @@
       Gulateria
     </a>
     <nav aria-label="Principal">
-      <a href="#nosotros">Nosotros</a>
-      <a href="#ubicacion">Ubicación</a>
-      <a href="#contacto">Contacto</a>
+      <a href="#nosotros" data-section="nosotros">Nosotros</a>
+      <a href="#ubicacion" data-section="ubicacion">Ubicación</a>
+      <a href="#contacto" data-section="contacto">Contacto</a>
       <a class="btn btn-small" href="#reservas">Reservar</a>
     </nav>
   </header>
@@ -77,12 +77,15 @@
           <button class="btn btn-primary" type="submit">Reservar mesa</button>
         </form>
 
+        <div class="hero-meta">
         <a class="proof" href="https://www.google.com/maps/search/?api=1&amp;query=Gulateria%20Heladeria%20Artesanal&amp;query_place_id=ChIJB69xTUX5cg0R_f9zSk-pq3I" target="_blank" rel="noopener">
-          <span class="stars" aria-hidden="true">
-            <svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg>
-          </span>
-          <span><strong>5,0 en Google</strong> · 254 opiniones</span>
-        </a>
+            <span class="stars" aria-hidden="true">
+              <svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg><svg viewBox="0 0 20 20"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8Z"/></svg>
+            </span>
+            <span><strong>5,0 en Google</strong> · 254 opiniones</span>
+          </a>
+          <p class="pill" data-open-pill hidden></p>
+        </div>
       </div>
 
       <div class="cone-stage" aria-hidden="true">
@@ -169,7 +172,7 @@
               </button>
               <span class="stepper-unit" data-people-unit>personas</span>
             </div>
-            <p class="hint">¿Más de 10? Escríbenos y lo organizamos.</p>
+            <p class="hint" data-people-hint>¿Más de 10? <a href="https://www.instagram.com/gulateria__" target="_blank" rel="noopener">Escríbenos</a> y lo organizamos.</p>
           </fieldset>
 
           <fieldset class="step">
@@ -177,18 +180,23 @@
             <div class="fields">
               <label class="field">
                 <span>Nombre</span>
-                <input name="name" autocomplete="name" required placeholder="Cómo te llamas">
+                <input name="name" autocomplete="name" autocapitalize="words" enterkeyhint="next" required placeholder="Cómo te llamas">
                 <em class="field-error" data-error="name"></em>
               </label>
               <label class="field">
                 <span>Teléfono</span>
-                <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="600 000 000">
+                <input name="phone" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="next" required placeholder="600 000 000">
                 <em class="field-error" data-error="phone"></em>
               </label>
               <label class="field field-wide">
                 <span>Comentarios <small>(opcional)</small></span>
                 <textarea name="notes" rows="2" placeholder="Cumpleaños, carrito de bebé, alergias…"></textarea>
               </label>
+              <label class="check field-wide">
+                <input type="checkbox" name="remember" checked>
+                <span>Recordar mis datos en este móvil para la próxima vez</span>
+              </label>
+              <p class="remembered field-wide" data-remembered hidden>Hola de nuevo. Hemos rellenado tus datos de la última vez. <button type="button" class="link-btn" data-forget>Borrarlos</button></p>
             </div>
           </fieldset>
 
@@ -201,7 +209,12 @@
         </form>
 
         <div class="ticket" data-ticket hidden tabindex="-1">
-          <svg class="ticket-check" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/><path d="m14 25 7 7 13-15"/></svg>
+          <svg class="ticket-cone" viewBox="0 0 60 80" aria-hidden="true">
+            <path d="M14 38 30 76 46 38Z" fill="var(--caramel)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M18 46h24M22 56h16M26 66h8" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" opacity=".45"/>
+            <circle class="tc-scoop tc-1" cx="30" cy="34" r="16" fill="var(--strawberry)"/>
+            <circle class="tc-scoop tc-2" cx="30" cy="18" r="14" fill="var(--ink)"/>
+          </svg>
           <h3 data-ticket-title>¡Reserva enviada!</h3>
           <dl class="ticket-rows">
             <div><dt>Día</dt><dd data-t="date"></dd></div>
@@ -210,7 +223,13 @@
             <div><dt>A nombre de</dt><dd data-t="name"></dd></div>
           </dl>
           <p class="ticket-note" data-ticket-note>Te escribiremos para confirmarla. Si algo cambia, avísanos por Instagram.</p>
-          <button class="btn btn-ghost" type="button" data-new>Hacer otra reserva</button>
+          <div class="ticket-actions">
+            <button class="btn btn-primary" type="button" data-ics>
+              <svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2.5"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
+              Añadir al calendario
+            </button>
+            <button class="btn btn-ghost" type="button" data-new>Hacer otra reserva</button>
+          </div>
         </div>
       </div>
     </section>
@@ -254,8 +273,8 @@
               <path d="M30 -20 L60 520M360 -20 L340 520M-20 60 L420 80" stroke-width="6"/>
             </g>
             <g transform="translate(200 250)">
-              <circle r="34" fill="#0A0A0A" opacity=".08"/>
-              <path d="M0 6s-22-19-22-36a22 22 0 1 1 44 0C22-13 0 6 0 6Z" fill="#0A0A0A"/>
+              <circle r="34" fill="#2B2B2B" opacity=".08"/>
+              <path d="M0 6s-22-19-22-36a22 22 0 1 1 44 0C22-13 0 6 0 6Z" fill="#2B2B2B"/>
               <circle cy="-30" r="8" fill="#fff"/>
             </g>
           </svg>
@@ -302,6 +321,11 @@
       </ul>
     </section>
   </main>
+
+  <div class="dock" data-dock aria-hidden="true">
+    <p class="dock-status" data-dock-status></p>
+    <a class="btn btn-primary" href="#reservas" tabindex="-1">Reservar mesa</a>
+  </div>
 
   <footer class="foot">
     <p>Gulateria · Heladería artesanal · C. Realenga de San Luis, 12, Málaga</p>

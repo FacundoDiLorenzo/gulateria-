@@ -178,6 +178,7 @@ function setPeople(n) {
   pUnit.textContent = state.people === 1 ? "persona" : "personas";
   pMinus.disabled = state.people <= 1;
   pPlus.disabled = state.people >= CONFIG.maxPeople;
+  $("[data-people-hint]").classList.toggle("is-max", state.people >= CONFIG.maxPeople);
   if (prev !== state.people && !reduceMotion) { pVal.classList.remove("bump"); void pVal.offsetWidth; pVal.classList.add("bump"); }
   updateSummary();
 }
@@ -258,6 +259,9 @@ form.addEventListener("submit", async (e) => {
 
   await new Promise((r) => setTimeout(r, mode === "demo" ? 450 : 0));
   submitBtn.removeAttribute("aria-busy");
+  if (form.elements.remember.checked) store.set({ name: data.nombre, phone: data.telefono });
+  else store.clear();
+  lastBooking = { ...data, minutes: state.time };
   showTicket(data, mode);
 });
 
@@ -282,28 +286,31 @@ function showTicket(data, mode) {
 }
 $("[data-new]").addEventListener("click", () => {
   ticket.hidden = true; form.hidden = false; form.reset();
-  state.time = null; renderSlots(false); form.elements.name.focus();
+  state.time = null; renderSlots(false); prefillRemembered(); form.elements.name.focus();
 });
 
 /* ─── Horario: hoy y abierto ahora ─── */
-(function hours() {
-  const now = new Date();
+function openStatus(now = new Date()) {
   const dow = now.getDay();
-  $$(".hours tr").forEach((r) => { if (r.dataset.days.split(",").map(Number).includes(dow)) r.classList.add("today"); });
   const m = now.getHours() * 60 + now.getMinutes();
   const yest = (dow + 6) % 7;
   const [o, c] = HOURS[dow];
-  const openToday = m >= o && m < c;
-  const openFromYesterday = m + 1440 < HOURS[yest][1];
+  if (m >= o && m < c) return { open: true, text: `Abierto ahora · hasta las ${fmtMin(c)}` };
+  if (m + 1440 < HOURS[yest][1]) return { open: true, text: `Abierto ahora · hasta las ${fmtMin(HOURS[yest][1] - 1440)}` };
+  return { open: false, text: m < o ? `Abrimos hoy a las ${fmtMin(o)}` : `Abrimos mañana a las ${fmtMin(HOURS[(dow + 1) % 7][0])}` };
+}
+function paintStatus() {
+  const st = openStatus();
+  const dow = new Date().getDay();
+  $$(".hours tr").forEach((r) => r.classList.toggle("today", r.dataset.days.split(",").map(Number).includes(dow)));
   const el = $("[data-open-now]");
-  if (openToday || openFromYesterday) {
-    const closeAt = openToday ? c : HOURS[yest][1] - 1440;
-    el.textContent = `Abierto ahora · cierra a las ${fmtMin(closeAt)}`;
-    el.classList.add("is-open");
-  } else {
-    el.textContent = `Cerrado ahora · abre a las ${fmtMin(o)}`;
-  }
-})();
+  el.textContent = st.text; el.classList.toggle("is-open", st.open);
+  const pill = $("[data-open-pill]");
+  pill.textContent = st.text; pill.classList.toggle("is-open", st.open); pill.hidden = false;
+  $("[data-dock-status]").textContent = st.text;
+}
+paintStatus();
+setInterval(paintStatus, 60_000);
 
 /* ─── Contacto según configuración ─── */
 (function contact() {
@@ -333,3 +340,78 @@ $("[data-year]").textContent = new Date().getFullYear();
 /* Estado inicial */
 selectDate(days[0] && isoDate(days[0]), false);
 setPeople(2);
+
+/* ─── Recordar datos (solo en este dispositivo) ─── */
+const STORE_KEY = "gulateria:datos";
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || null; } catch { return null; } },
+  set(v) { try { localStorage.setItem(STORE_KEY, JSON.stringify(v)); } catch {} },
+  clear() { try { localStorage.removeItem(STORE_KEY); } catch {} },
+};
+function prefillRemembered() {
+  const saved = store.get();
+  const note = $("[data-remembered]");
+  if (!saved || !saved.name) { note.hidden = true; return; }
+  form.elements.name.value = saved.name;
+  form.elements.phone.value = saved.phone || "";
+  note.firstChild.textContent = `Hola de nuevo, ${saved.name.split(" ")[0]}. Hemos rellenado tus datos de la última vez. `;
+  note.hidden = false;
+}
+$("[data-forget]").addEventListener("click", () => {
+  store.clear();
+  form.elements.name.value = ""; form.elements.phone.value = "";
+  form.elements.remember.checked = false;
+  $("[data-remembered]").hidden = true;
+  form.elements.name.focus();
+});
+prefillRemembered();
+
+/* ─── Añadir al calendario (.ics) ─── */
+let lastBooking = null;
+$("[data-ics]").addEventListener("click", () => {
+  if (!lastBooking) return;
+  const [y, mo, d] = lastBooking.fecha.split("-").map(Number);
+  const start = new Date(y, mo - 1, d, 0, lastBooking.minutes);
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const stamp = (dt) => `${dt.getFullYear()}${pad(dt.getMonth() + 1)}${pad(dt.getDate())}T${pad(dt.getHours())}${pad(dt.getMinutes())}00`;
+  const ics = [
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Gulateria//Reservas//ES", "BEGIN:VEVENT",
+    `UID:${Date.now()}@gulateria`, `DTSTAMP:${stamp(new Date())}`,
+    `DTSTART:${stamp(start)}`, `DTEND:${stamp(end)}`,
+    `SUMMARY:Gulateria · mesa para ${lastBooking.personas}`,
+    "LOCATION:C. Realenga de San Luis\\, 12\\, 29004 Málaga",
+    `DESCRIPTION:Reserva a nombre de ${lastBooking.nombre}.`,
+    "END:VEVENT", "END:VCALENDAR",
+  ].join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+  a.download = "reserva-gulateria.ics";
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+/* ─── Navegación: sección activa ─── */
+const navLinks = $$("[data-section]");
+const sectionObs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    navLinks.forEach((a) => a.setAttribute("aria-current", a.dataset.section === e.target.id ? "true" : "false"));
+  });
+}, { rootMargin: "-45% 0px -50% 0px" });
+navLinks.forEach((a) => { const sec = document.getElementById(a.dataset.section); if (sec) sectionObs.observe(sec); });
+const resetNavObs = new IntersectionObserver((entries) => entries.forEach((e) => {
+  if (e.isIntersecting) navLinks.forEach((a) => a.setAttribute("aria-current", "false"));
+}), { rootMargin: "-45% 0px -50% 0px" });
+[$(".hero"), $("#reservas")].forEach((el) => resetNavObs.observe(el));
+
+/* ─── Barra de reserva en móvil ─── */
+const dock = $("[data-dock]");
+const seen = { quick: true, reserve: false, foot: false };
+const dockObs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { seen[e.target.dataset.dockWatch] = e.isIntersecting; });
+  const show = !seen.quick && !seen.reserve && !seen.foot;
+  dock.toggleAttribute("data-show", show);
+  dock.setAttribute("aria-hidden", show ? "false" : "true");
+  $("a", dock).tabIndex = show ? 0 : -1;
+});
+[[quick, "quick"], [$("#reservas"), "reserve"], [$(".foot"), "foot"]].forEach(([el, k]) => { el.dataset.dockWatch = k; dockObs.observe(el); });
