@@ -427,6 +427,8 @@ tag(".reserve-shell", "card");
 tag(".hours tbody tr", "row", true);
 tag(".map-card", "map");
 tag(".contact-list li", "card", true);
+tag(".flavors-head h2, .flavors-head p", "rise");
+tag(".flavor", "card", true);
 
 // Clipped elements have no visible area to intersect, so watch their parent instead.
 const watchers = new Map();
@@ -499,7 +501,7 @@ const views = Object.fromEntries($$("[data-view]").map((v) => [v.dataset.view, v
 const viewsEl = $("[data-views]");
 let current = "inicio";
 let leaveTimer = 0;
-const TITLES = { inicio: "Gulateria · Heladería artesanal en Málaga", reservas: "Reservar mesa · Gulateria", ubicacion: "Ubicación y horario · Gulateria", contacto: "Contacto · Gulateria" };
+const TITLES = { inicio: "Gulateria · Helado artesanal y café en Málaga", reservas: "Reservar mesa · Gulateria", ubicacion: "Ubicación y horario · Gulateria", contacto: "Contacto · Gulateria" };
 
 function go(name, { push = true, instant = false } = {}) {
   // Nosotros vive dentro de la portada: ir a la portada y bajar hasta el bloque

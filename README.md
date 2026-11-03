@@ -1,6 +1,6 @@
 # Gulateria
 
-Web de una página para Gulateria, heladería artesanal en Málaga (C. Realenga de San Luis, 12, Carretera de Cádiz).
+Web de Gulateria, heladería artesanal y cafetería en Málaga (C. Realenga de San Luis, 12, Carretera de Cádiz).
 
 Secciones: presentación, reservas, ubicación (mapa y horario) y contacto.
 

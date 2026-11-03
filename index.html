@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Gulateria · Heladería artesanal en Málaga</title>
-  <meta name="description" content="Gulateria, heladería artesanal en Carretera de Cádiz, Málaga. Reserva tu mesa online. Helados sin conservantes ni colorantes artificiales.">
+  <title>Gulateria · Helado artesanal y café en Málaga</title>
+  <meta name="description" content="Gulateria, heladería artesanal y cafetería en Carretera de Cádiz, Málaga. Reserva tu mesa online. Helados sin conservantes ni colorantes artificiales, y café.">
   <meta name="theme-color" content="#FFFFFF">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,8 +14,10 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "IceCreamShop",
-    "name": "Gulateria Heladería Artesanal",
+    "@type": ["IceCreamShop", "CafeOrCoffeeShop"],
+    "name": "Gulateria · Helado artesanal & café",
+    "logo": "img/logo-full.png",
+    "image": ["img/copa.jpg", "img/pistacho.jpg", "img/oreo.jpg", "img/mango.jpg"],
     "acceptsReservations": true,
     "address": {
       "@type": "PostalAddress",
@@ -39,9 +41,9 @@
   <a class="skip" href="#reservas">Saltar a reservas</a>
 
   <header class="nav" data-nav>
-    <a class="logo" href="#inicio" aria-label="Gulateria, inicio">
-      <svg class="logo-mark" viewBox="0 0 32 40" aria-hidden="true"><circle cx="16" cy="13" r="10" fill="var(--strawberry)"/><path d="M7 19 16 38 25 19Z" fill="var(--caramel)"/><path d="M10 23h12M12.5 28h7" stroke="var(--caramel-deep)" stroke-width="1.6" stroke-linecap="round"/></svg>
-      Gulateria
+    <a class="logo" href="#inicio" aria-label="Gulateria, helado artesanal y café. Inicio">
+      <img class="logo-mark" src="img/logo-mark.png" alt="" width="143" height="182">
+      <img class="logo-word" src="img/logo-word.png" alt="" width="604" height="101">
     </a>
     <div class="nav-actions">
       <a class="btn btn-small" href="#reservas" data-nav-cta>Reservar</a>
@@ -69,11 +71,11 @@
       <div class="hero">
       <div class="hero-copy">
         <h1>
-          <span class="line">Helado artesano,</span>
-          <span class="line">recién hecho</span>
+          <span class="line">Helado artesano</span>
+          <span class="line">y café,</span>
           <span class="line">en Carretera de&nbsp;Cádiz.</span>
         </h1>
-        <p class="lead">Ingredientes frescos y recetas de siempre, sin conservantes ni colorantes. Ahora puedes reservar tu mesa y venir directo a elegir sabor.</p>
+        <p class="lead">Heladería y cafetería. Helado hecho a mano, sin conservantes ni colorantes, y un buen café para acompañarlo. Reserva tu mesa y ven directo a elegir sabor.</p>
 
         <form class="quick" data-quick aria-label="Reserva rápida">
           <label class="quick-field">
@@ -102,29 +104,15 @@
         </div>
       </div>
 
-      <div class="cone-stage" aria-hidden="true" data-cone>
-        <svg class="cone" viewBox="0 0 360 480">
-          <g class="cone-body">
-            <path d="M92 250 180 470 268 250Z" fill="var(--caramel)"/>
-            <path d="M92 250 180 470 268 250Z" fill="url(#waffle)"/>
-          </g>
-          <g class="scoop scoop-1"><circle cx="122" cy="232" r="66" fill="var(--pistachio)"/><path d="M68 252c14 18 28 6 40 20s30 4 40-6" fill="none" stroke="var(--pistachio-deep)" stroke-width="5" stroke-linecap="round" opacity=".35"/></g>
-          <g class="scoop scoop-2"><circle cx="238" cy="232" r="66" fill="var(--choc)"/><path d="M196 262c12 10 26 2 36 12s28 6 44-8" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round" opacity=".18"/></g>
-          <g class="scoop scoop-3"><circle cx="180" cy="140" r="74" fill="var(--strawberry)"/><path d="M120 170c14 14 30 0 44 12s32 2 48-10" fill="none" stroke="var(--strawberry-deep)" stroke-width="5" stroke-linecap="round" opacity=".35"/><circle cx="152" cy="108" r="12" fill="#fff" opacity=".28"/></g>
-          <path class="drip" d="M236 290c0 18 8 26 8 36a8 8 0 0 1-16 0c0-10 8-18 8-36Z" fill="var(--choc)"/>
-          <defs>
-            <pattern id="waffle" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <path d="M0 0H22M0 0V22" stroke="var(--caramel-deep)" stroke-width="3" opacity=".55"/>
-            </pattern>
-          </defs>
-        </svg>
-      </div>
+      <figure class="cone-stage hero-photo" data-cone>
+        <img class="cone" src="img/copa.jpg" alt="Tarrina de helado artesanal de frutos rojos con barquillo, en Gulateria" width="900" height="741" fetchpriority="high">
+      </figure>
     </div>
 
     <div id="nosotros" class="about" aria-label="Nosotros">
       <div class="about-intro">
         <h2>Lo que no lleva también importa.</h2>
-        <p>En Gulateria hacemos el helado a mano con fruta de temporada, frutos secos de primera, especias y algún licor escogido. Lo servimos en cucurucho o en tarrina, en un local tranquilo y familiar.</p>
+        <p>En Gulateria hacemos el helado a mano con fruta de temporada, frutos secos de primera, especias y algún licor escogido. Lo servimos en cucurucho o en tarrina, en un local tranquilo y familiar. Y como también somos cafetería, puedes acompañarlo con un café.</p>
       </div>
       <ul class="without" role="list">
         <li><span>Sin</span> conservantes</li>
@@ -133,6 +121,19 @@
       </ul>
 
     </div>
+
+      <div class="flavors" aria-labelledby="flavors-title">
+        <div class="flavors-head">
+          <h2 id="flavors-title">Recién salidos de la vitrina</h2>
+          <p>Algunos de los sabores que preparamos. Los del día, en <a href="https://www.instagram.com/gulateria__" target="_blank" rel="noopener">Instagram</a>.</p>
+        </div>
+        <ul class="flavor-track" role="list" data-flavors>
+          <li class="flavor"><img src="img/pistacho.jpg" alt="Cremino de pistacho: chocolate blanco cremoso, un remolino de crema de pistacho y trozos crujientes" width="900" height="1124" loading="lazy"></li>
+          <li class="flavor"><img src="img/oreo.jpg" alt="Oreo: cremoso helado de vainilla con trozos generosos de galleta Oreo" width="900" height="1124" loading="lazy"></li>
+          <li class="flavor"><img src="img/yogur-platano-mango.jpg" alt="Yogur de plátano con mango: helado de yogur de plátano con salsa de mango" width="900" height="1118" loading="lazy"></li>
+          <li class="flavor"><img src="img/mango.jpg" alt="Mango: cremoso helado de mango natural" width="900" height="1121" loading="lazy"></li>
+        </ul>
+      </div>
     </section>
 
     <!-- RESERVAS -->
@@ -322,7 +323,8 @@
   </div>
 
   <footer class="foot">
-    <p>Gulateria · Heladería artesanal · C. Realenga de San Luis, 12, Málaga</p>
+    <p class="foot-brand"><img src="img/logo-full.png" alt="Gulateria, helado artesanal y café" width="604" height="345" loading="lazy"></p>
+    <p>Heladería y cafetería · C. Realenga de San Luis, 12, Málaga</p>
     <p>© <span data-year>2026</span></p>
   </footer>
 

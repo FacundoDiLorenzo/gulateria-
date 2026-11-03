@@ -151,13 +151,6 @@ h1 .line:nth-child(2) { color: var(--strawberry-deep); font-style: italic; font-
 /* Cone: the page's one authored moment — scoops drop and stack on load */
 .cone-stage { position: relative; justify-self: center; width: 100%; }
 .cone { width: 100%; height: auto; overflow: visible; display: block; }
-.cone .scoop, .cone .cone-body, .cone .drip { transform-box: fill-box; transform-origin: 50% 100%; }
-.js .cone .cone-body { animation: cone-in 700ms var(--ease-out) both; }
-.js .cone .scoop { animation: scoop-drop 820ms var(--ease-out) both; }
-.js .cone .scoop-1 { animation-delay: 160ms; }
-.js .cone .scoop-2 { animation-delay: 260ms; }
-.js .cone .scoop-3 { animation-delay: 420ms; }
-.js .cone .drip { transform-origin: 50% 0; animation: drip 900ms var(--ease-out) 1050ms both; }
 @keyframes cone-in { from { opacity: 0; transform: translateY(24px) scale(.96); } }
 @keyframes scoop-drop {
   0%   { opacity: 0; transform: translateY(-140px) scale(.92); }
@@ -637,3 +630,56 @@ body.menu-open .burger { background: rgb(255 255 255 / .14); color: #fff; }
 body.menu-open [data-nav-cta] { visibility: hidden; }
 
 .home .about { align-items: center; border-top: 1px solid var(--line); }
+
+/* ─── Real logo ──────────────────────────────────────────── */
+.logo { gap: .55rem; }
+.logo img { display: block; height: auto; transition: filter 300ms ease; }
+.logo .logo-mark { width: 22px; }
+.logo .logo-word { width: 118px; }
+body.menu-open .logo img { filter: brightness(0) invert(1); }
+.foot-brand img { display: block; width: 150px; height: auto; filter: brightness(0) invert(1); opacity: .9; }
+.foot { align-items: center; }
+
+/* ─── Hero photo: shop-window arch, revealed from the bottom ─ */
+.hero-photo { margin: 0; justify-self: center; width: 100%; max-width: 420px; }
+.hero-photo img {
+  display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 60%;
+  border-radius: 999px 999px 28px 28px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / .06), 0 30px 60px -30px rgb(0 0 0 / .45);
+}
+.js .hero-photo { animation: photo-reveal 1100ms var(--ease-in-out) 150ms both; }
+.js .hero-photo img { animation: photo-settle 1400ms var(--ease-out) 150ms both; }
+@keyframes photo-reveal { from { clip-path: inset(100% 0 0 0 round 999px 999px 28px 28px); } to { clip-path: inset(0 0 0 0 round 999px 999px 28px 28px); } }
+@keyframes photo-settle { from { transform: scale(1.12); } to { transform: scale(1); } }
+.js .cone-stage.hero-photo.is-floating .cone { animation: photo-float 6s var(--ease-in-out) infinite alternate; }
+@keyframes photo-float { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+
+/* ─── Flavors gallery ────────────────────────────────────── */
+.flavors { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter) clamp(3.5rem, 8vw, 6rem); }
+.flavors-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem 3rem; margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
+.flavors-head p { max-width: 24rem; color: var(--ink-soft); font-size: 1.05rem; }
+.flavors-head a { color: var(--ink); font-weight: 600; }
+.flavor-track { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(.75rem, 1.6vw, 1.25rem); }
+.flavor img {
+  display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+  border-radius: var(--radius); background: var(--wafer);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .06), 0 18px 36px -20px rgb(0 0 0 / .4);
+  transition: transform 320ms var(--ease-out), box-shadow 320ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .flavor img:hover { transform: translateY(-6px) rotate(-.6deg); box-shadow: 0 1px 2px rgb(0 0 0 / .06), 0 28px 48px -22px rgb(0 0 0 / .5); }
+}
+@media (max-width: 900px) {
+  .hero-photo { width: 100%; max-width: min(72vw, 320px); margin-bottom: .5rem; }
+  .flavor-track {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+    margin: 0 calc(-1 * var(--gutter)); padding: .25rem var(--gutter) 1rem; scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .flavor-track::-webkit-scrollbar { display: none; }
+  .flavor { flex: 0 0 min(68vw, 280px); scroll-snap-align: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .hero-photo, .js .hero-photo img { animation: fade 400ms ease both; }
+  .js .cone-stage.hero-photo.is-floating .cone { animation: none; }
+}
