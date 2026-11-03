@@ -695,3 +695,111 @@ img.map-art { object-fit: cover; object-position: 44% 48%; background: var(--waf
   .map-label > span:first-child { display: none; }
   .map-btn { box-shadow: 0 8px 20px -8px rgb(0 0 0 / .5); }
 }
+
+/* ─── Sabores view ───────────────────────────────────────── */
+.flavors-inner { max-width: var(--max); margin: 0 auto; padding: clamp(3rem, 8vw, 5.5rem) var(--gutter) clamp(3.5rem, 8vw, 6rem); }
+.flavor-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.75rem); perspective: 1000px; }
+.flavor-card { min-width: 0; }
+.flavor-btn {
+  display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: var(--radius);
+  transform-style: preserve-3d; will-change: transform;
+  transition: transform 160ms var(--ease-out);
+}
+.flavor-btn:active { transform: scale(0.98); }
+.flavor-frame {
+  position: relative; display: block; overflow: hidden; border-radius: var(--radius); aspect-ratio: 4 / 5; background: var(--wafer);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .06), 0 18px 36px -20px rgb(0 0 0 / .4);
+  transition: box-shadow 300ms ease;
+}
+.flavor-frame img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 600ms var(--ease-out); }
+/* Sheen that follows the pointer */
+.flavor-frame::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgb(255 255 255 / .35), transparent 55%);
+  mix-blend-mode: soft-light; transition: opacity 300ms ease;
+}
+.flavor-card.is-hover .flavor-frame::after { opacity: 1; }
+.flavor-card.is-hover .flavor-frame { box-shadow: 0 1px 2px rgb(0 0 0 / .06), 0 34px 60px -26px rgb(0 0 0 / .55); }
+.flavor-card.is-hover .flavor-frame img { transform: scale(1.04); }
+.flavor-name { margin-top: 1rem; font-size: clamp(1.15rem, 1.6vw, 1.4rem); }
+.flavor-desc { margin-top: .35rem; font-size: .95rem; color: var(--ink-soft); }
+
+/* Entrance: frames wipe up, photos settle, text follows */
+.js .flavor-card .flavor-frame { clip-path: inset(100% 0 0 0 round var(--radius)); }
+.js .flavor-card .flavor-frame img { transform: scale(1.18); }
+.js .flavor-card .flavor-name, .js .flavor-card .flavor-desc { opacity: 0; transform: translateY(10px); }
+.flavor-card.is-shown .flavor-frame { clip-path: inset(0 0 0 0 round var(--radius)); transition: clip-path 900ms var(--ease-in-out), box-shadow 300ms ease; transition-delay: calc(var(--i, 0) * 90ms); }
+.flavor-card.is-shown .flavor-frame img { transform: scale(1); transition: transform 1300ms var(--ease-out) calc(var(--i, 0) * 90ms); }
+.flavor-card.is-shown.is-hover .flavor-frame img { transform: scale(1.04); transition: transform 600ms var(--ease-out); }
+.flavor-card.is-shown .flavor-name, .flavor-card.is-shown .flavor-desc { opacity: 1; transform: none; transition: opacity 500ms var(--ease-out), transform 600ms var(--ease-out); transition-delay: calc(var(--i, 0) * 90ms + 420ms); }
+.flavor-card.is-shown .flavor-desc { transition-delay: calc(var(--i, 0) * 90ms + 500ms); }
+
+.flavor-dots { display: none; }
+
+/* Mobile: snap carousel, centered card in focus */
+@media (max-width: 900px) {
+  .flavor-grid {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+    margin: 0 calc(-1 * var(--gutter)); padding: .5rem var(--gutter) 1rem; scroll-padding-inline: var(--gutter);
+    scrollbar-width: none; perspective: none;
+  }
+  .flavor-grid::-webkit-scrollbar { display: none; }
+  .flavor-card { flex: 0 0 min(74vw, 300px); scroll-snap-align: center; transition: transform 400ms var(--ease-out), opacity 400ms ease; }
+  .flavor-card.is-shown:not(.is-centered) { transform: scale(.94); opacity: .6; }
+  .flavor-dots { display: flex; justify-content: center; gap: .5rem; margin-top: .5rem; }
+  .flavor-dots span { width: 7px; height: 7px; border-radius: 999px; background: var(--line); transition: width 300ms var(--ease-out), background-color 300ms ease; }
+  .flavor-dots span.on { width: 22px; background: var(--ink); }
+}
+
+/* ─── Lightbox ───────────────────────────────────────────── */
+.lightbox { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: clamp(1rem, 4vw, 3rem); }
+.lb-backdrop { position: absolute; inset: 0; background: rgb(20 20 20 / .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); opacity: 0; transition: opacity 300ms ease; }
+.lightbox.is-open .lb-backdrop { opacity: 1; }
+.lb-body {
+  position: relative; width: min(980px, 100%); max-height: calc(100dvh - 2rem);
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: clamp(1.25rem, 4vw, 3rem);
+  background: var(--paper); border-radius: calc(var(--radius) + 6px); padding: clamp(1rem, 2.5vw, 1.5rem);
+  box-shadow: 0 40px 80px -30px rgb(0 0 0 / .6);
+}
+.lb-figure { margin: 0; overflow: hidden; border-radius: var(--radius); aspect-ratio: 4 / 5; background: var(--wafer); }
+.lb-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.lb-text { padding: .5rem clamp(0rem, 2vw, 1rem) .5rem 0; }
+.lb-text > * { transition: opacity 260ms ease, transform 320ms var(--ease-out), filter 260ms ease; }
+.lb-text.is-swapping > :not(.lb-nav) { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+.lb-count { font-size: .85rem; font-weight: 600; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.lb-text h3 { margin-top: .5rem; font-size: clamp(1.8rem, 3.5vw, 2.75rem); }
+.lb-text [data-lb-desc] { margin-top: .8rem; font-size: 1.1rem; color: var(--ink-soft); max-width: 28rem; }
+.lb-nav { display: flex; align-items: center; gap: .5rem; margin-top: 1.75rem; flex-wrap: wrap; }
+.lb-btn, .lb-close {
+  width: 48px; height: 48px; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  background: var(--wafer); color: var(--ink); transition: transform 140ms var(--ease-out), background-color 200ms ease;
+}
+.lb-btn svg, .lb-close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lb-btn:active, .lb-close:active { transform: scale(0.92); }
+.lb-nav .btn { margin-left: .5rem; }
+.lb-close { position: absolute; top: .75rem; right: .75rem; background: rgb(255 255 255 / .9); box-shadow: 0 4px 14px -6px rgb(0 0 0 / .4); }
+@media (hover: hover) and (pointer: fine) { .lb-btn:hover, .lb-close:hover { background: var(--line); } }
+.lb-body { opacity: 0; transform: translateY(16px) scale(.98); transition: opacity 260ms ease, transform 420ms var(--ease-drawer); }
+.lightbox.is-open .lb-body { opacity: 1; transform: none; }
+.lightbox.is-closing .lb-body { transition: opacity 180ms ease, transform 200ms var(--ease-out); }
+.lb-img.is-swapping { animation: lb-swap 320ms var(--ease-out); }
+@keyframes lb-swap { from { opacity: .2; filter: blur(6px); transform: translateX(var(--dir, 20px)); } }
+@media (max-width: 760px) {
+  .lightbox { padding: 0; place-items: end stretch; }
+  .lb-body { grid-template-columns: 1fr; border-radius: 26px 26px 0 0; width: 100%; max-height: 100dvh; overflow-y: auto; gap: 1rem; padding: .75rem .75rem calc(1.25rem + env(safe-area-inset-bottom, 0px)); transform: translateY(100%); transition: transform 460ms var(--ease-drawer), opacity 200ms ease; opacity: 1; }
+  .lightbox.is-open .lb-body { transform: none; }
+  .lightbox.is-closing .lb-body { transition: transform 260ms var(--ease-out); }
+  .lb-figure { aspect-ratio: auto; height: min(62dvh, 118vw); touch-action: pan-y; }
+  .lb-img { object-fit: contain; background: #1f1f1f; }
+  .lb-text { padding: 0 .5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .flavor-card .flavor-frame, .flavor-card.is-shown .flavor-frame { clip-path: none; }
+  .js .flavor-card .flavor-frame img, .flavor-card.is-shown .flavor-frame img { transform: none; }
+  .flavor-card.is-shown:not(.is-centered) { transform: none; }
+  .flavor-btn { transform: none !important; }
+  .lb-body, .lightbox.is-open .lb-body { transform: none; }
+  .lb-img.is-swapping { animation: fade 200ms ease; }
+  .lb-text.is-swapping > :not(.lb-nav) { transform: none; filter: none; }
+}

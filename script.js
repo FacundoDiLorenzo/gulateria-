@@ -501,7 +501,7 @@ const views = Object.fromEntries($$("[data-view]").map((v) => [v.dataset.view, v
 const viewsEl = $("[data-views]");
 let current = "inicio";
 let leaveTimer = 0;
-const TITLES = { inicio: "Gulateria · Helado artesanal y café en Málaga", reservas: "Reservar mesa · Gulateria", ubicacion: "Ubicación y horario · Gulateria", contacto: "Contacto · Gulateria" };
+const TITLES = { sabores: "Sabores · Gulateria", inicio: "Gulateria · Helado artesanal y café en Málaga", reservas: "Reservar mesa · Gulateria", ubicacion: "Ubicación y horario · Gulateria", contacto: "Contacto · Gulateria" };
 
 function go(name, { push = true, instant = false } = {}) {
   // Nosotros vive dentro de la portada: ir a la portada y bajar hasta el bloque
@@ -580,3 +580,169 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menu.cla
 
 // Vista inicial según la URL
 go(location.hash.slice(1) || "inicio", { push: false, instant: true });
+
+/* ─── Sabores: entrada, inclinación, carrusel y vista ampliada ─── */
+(function flavors() {
+  const grid = $("[data-flavor-grid]");
+  if (!grid) return;
+  const cards = $$(".flavor-card", grid);
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const items = cards.map((c) => ({
+    src: $("img", c).getAttribute("src"),
+    alt: $("img", c).alt,
+    name: $(".flavor-name", c).textContent,
+    desc: $(".flavor-desc", c).textContent,
+  }));
+
+  // Entrance, staggered by column
+  cards.forEach((c, i) => c.style.setProperty("--i", i));
+  const showObs = new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add("is-shown"); showObs.unobserve(e.target); }
+  }), { threshold: 0.15 });
+  cards.forEach((c) => showObs.observe(c));
+
+  // Pointer tilt with a soft follow (desktop only)
+  if (fine && !reduceMotion) {
+    cards.forEach((card) => {
+      const btn = $(".flavor-btn", card), frame = $(".flavor-frame", card);
+      let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+      const tick = () => {
+        x += (tx - x) * 0.12; y += (ty - y) * 0.12;
+        btn.style.transform = `rotateX(${(-y * 7).toFixed(2)}deg) rotateY(${(x * 9).toFixed(2)}deg) translateZ(0)`;
+        raf = Math.abs(tx - x) > 0.002 || Math.abs(ty - y) > 0.002 ? requestAnimationFrame(tick) : 0;
+        if (!raf && tx === 0 && ty === 0) btn.style.transform = "";
+      };
+      card.addEventListener("pointermove", (e) => {
+        const r = frame.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+        tx = px * 2 - 1; ty = py * 2 - 1;
+        frame.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
+        frame.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
+        card.classList.add("is-hover");
+        if (!raf) raf = requestAnimationFrame(tick);
+      });
+      card.addEventListener("pointerleave", () => {
+        tx = 0; ty = 0; card.classList.remove("is-hover");
+        if (!raf) raf = requestAnimationFrame(tick);
+      });
+    });
+  }
+
+  // Mobile carousel: focus the centered card + dots
+  const dots = $("[data-flavor-dots]");
+  dots.innerHTML = cards.map(() => "<span></span>").join("");
+  const dotEls = $$("span", dots);
+  const centerObs = new IntersectionObserver((entries) => entries.forEach((e) => {
+    e.target.classList.toggle("is-centered", e.isIntersecting);
+    if (e.isIntersecting) dotEls.forEach((d, i) => d.classList.toggle("on", cards[i] === e.target));
+  }), { root: grid, threshold: 0.6 });
+  cards.forEach((c) => centerObs.observe(c));
+
+  // Lightbox
+  const lb = $("[data-lightbox]"), body = $(".lb-body", lb), img = $("[data-lb-img]", lb), text = $(".lb-text", lb);
+  let idx = 0, busy = false;
+  const desktop = () => matchMedia("(min-width: 761px)").matches;
+
+  function fill(i) {
+    const it = items[i];
+    img.src = it.src; img.alt = it.alt;
+    $("[data-lb-title]", lb).textContent = it.name;
+    $("[data-lb-desc]", lb).textContent = it.desc;
+    $("[data-lb-count]", lb).textContent = `${i + 1} / ${items.length}`;
+  }
+  // A temporary image that flies between two rects (card <-> lightbox)
+  function flyer(fromRect, toRect, src, duration, easing) {
+    const f = document.createElement("img");
+    f.src = src; f.alt = "";
+    Object.assign(f.style, { position: "fixed", left: `${toRect.left}px`, top: `${toRect.top}px`, width: `${toRect.width}px`, height: `${toRect.height}px`, objectFit: "cover", borderRadius: "22px", zIndex: 70, pointerEvents: "none", transformOrigin: "0 0" });
+    document.body.append(f);
+    const sx = fromRect.width / toRect.width, sy = fromRect.height / toRect.height;
+    const anim = f.animate([
+      { transform: `translate(${fromRect.left - toRect.left}px, ${fromRect.top - toRect.top}px) scale(${sx}, ${sy})` },
+      { transform: "none" },
+    ], { duration, easing, fill: "both" });
+    return anim.finished.then(() => f);
+  }
+  function hideNow() {
+    lb.hidden = true; lb.classList.remove("is-open", "is-closing");
+    document.body.style.overflow = ""; busy = false;
+  }
+
+  async function open(i) {
+    if (busy) return; busy = true;
+    idx = i; fill(i);
+    lb.hidden = false; document.body.style.overflow = "hidden";
+    const fly = desktop() && !reduceMotion;
+    if (fly) { body.style.transition = "opacity 260ms ease"; body.style.transform = "none"; img.style.opacity = "0"; }
+    void lb.offsetWidth;
+    lb.classList.add("is-open");
+    $(".lb-close", lb).focus({ preventScroll: true });
+    if (fly) {
+      const from = $(".flavor-frame", cards[i]).getBoundingClientRect();
+      const f = await flyer(from, img.getBoundingClientRect(), items[i].src, 560, "cubic-bezier(0.32, 0.72, 0, 1)");
+      img.style.opacity = ""; f.remove();
+      body.style.transition = ""; body.style.transform = "";
+    }
+    busy = false;
+  }
+
+  async function close() {
+    if (lb.hidden || busy) return; busy = true;
+    const fly = desktop() && !reduceMotion;
+    if (fly) {
+      const to = $(".flavor-frame", cards[idx]).getBoundingClientRect(), from = img.getBoundingClientRect();
+      body.style.transition = "opacity 200ms ease"; body.style.transform = "none";
+      img.style.opacity = "0";
+      lb.classList.remove("is-open");
+      const f = await flyer(from, to, items[idx].src, 340, "cubic-bezier(0.77, 0, 0.175, 1)");
+      f.remove(); img.style.opacity = ""; body.style.transition = ""; body.style.transform = "";
+    } else {
+      lb.classList.add("is-closing"); lb.classList.remove("is-open");
+      await new Promise((r) => setTimeout(r, reduceMotion ? 180 : 280));
+    }
+    hideNow();
+    $(".flavor-btn", cards[idx]).focus({ preventScroll: true });
+  }
+
+  function step(d) {
+    idx = (idx + d + items.length) % items.length;
+    text.classList.add("is-swapping");
+    img.style.setProperty("--dir", `${d * 24}px`);
+    setTimeout(() => {
+      fill(idx);
+      img.classList.remove("is-swapping"); void img.offsetWidth; img.classList.add("is-swapping");
+      text.classList.remove("is-swapping");
+    }, reduceMotion ? 0 : 140);
+  }
+
+  grid.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-open]");
+    if (b) open(Number(b.dataset.open));
+  });
+  $$("[data-lb-close]", lb).forEach((b) => b.addEventListener("click", close));
+  $("[data-lb-prev]", lb).addEventListener("click", () => step(-1));
+  $("[data-lb-next]", lb).addEventListener("click", () => step(1));
+  $("[data-lb-reserve]", lb).addEventListener("click", hideNow, true);
+  document.addEventListener("keydown", (e) => {
+    if (lb.hidden) return;
+    if (e.key === "Escape") { e.preventDefault(); close(); }
+    else if (e.key === "ArrowRight") step(1);
+    else if (e.key === "ArrowLeft") step(-1);
+    else if (e.key === "Tab") {
+      const f = $$("button, a[href]", body);
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  window.addEventListener("popstate", () => { if (!lb.hidden) hideNow(); });
+
+  // Swipe between flavors on touch (distance or a quick flick)
+  let sx0 = 0, st = 0;
+  const fig = $(".lb-figure", lb);
+  fig.addEventListener("pointerdown", (e) => { sx0 = e.clientX; st = performance.now(); });
+  fig.addEventListener("pointerup", (e) => {
+    const dx = e.clientX - sx0, v = Math.abs(dx) / Math.max(1, performance.now() - st);
+    if (Math.abs(dx) > 50 || (v > 0.11 && Math.abs(dx) > 12)) step(dx < 0 ? 1 : -1);
+  });
+})();

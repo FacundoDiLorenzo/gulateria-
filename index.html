@@ -57,6 +57,7 @@
     <nav aria-label="Secciones">
       <ol class="menu-links" role="list">
         <li><a href="#inicio" data-go="inicio"><small>Portada</small>Inicio</a></li>
+        <li><a href="#sabores" data-go="sabores"><small>La vitrina</small>Sabores</a></li>
         <li><a href="#reservas" data-go="reservas"><small>Mesa online</small>Reservar</a></li>
         <li><a href="#ubicacion" data-go="ubicacion"><small>Mapa y horario</small>Ubicación</a></li>
         <li><a href="#contacto" data-go="contacto"><small>Escríbenos</small>Contacto</a></li>
@@ -122,21 +123,67 @@
 
     </div>
 
-      <div class="flavors" aria-labelledby="flavors-title">
-        <div class="flavors-head">
-          <h2 id="flavors-title">Recién salidos de la vitrina</h2>
-          <p>Algunos de los sabores que preparamos. Los del día, en <a href="https://www.instagram.com/gulateria__" target="_blank" rel="noopener">Instagram</a>.</p>
-        </div>
-        <ul class="flavor-track" role="list" data-flavors>
-          <li class="flavor"><img src="img/pistacho.jpg" alt="Cremino de pistacho: chocolate blanco cremoso, un remolino de crema de pistacho y trozos crujientes" width="900" height="1124" loading="lazy"></li>
-          <li class="flavor"><img src="img/oreo.jpg" alt="Oreo: cremoso helado de vainilla con trozos generosos de galleta Oreo" width="900" height="1124" loading="lazy"></li>
-          <li class="flavor"><img src="img/yogur-platano-mango.jpg" alt="Yogur de plátano con mango: helado de yogur de plátano con salsa de mango" width="900" height="1118" loading="lazy"></li>
-          <li class="flavor"><img src="img/mango.jpg" alt="Mango: cremoso helado de mango natural" width="900" height="1121" loading="lazy"></li>
-        </ul>
-      </div>
     </section>
 
     <!-- RESERVAS -->
+    <section id="sabores" class="view flavors-view" data-view="sabores" aria-labelledby="flavors-title" hidden>
+      <div class="flavors-inner">
+        <div class="flavors-head">
+          <h2 id="flavors-title">Algunos de nuestros sabores</h2>
+          <p>Los hacemos aquí, en tandas pequeñas, y la vitrina va cambiando. Los del día los publicamos en <a href="https://www.instagram.com/gulateria__" target="_blank" rel="noopener">Instagram</a>.</p>
+        </div>
+        <ul class="flavor-grid" role="list" data-flavor-grid>
+          <li class="flavor-card" data-flavor="0">
+            <button type="button" class="flavor-btn" data-open="0" aria-label="Ver Cremino de pistacho en grande">
+              <span class="flavor-frame"><img src="img/pistacho.jpg" alt="Cremino de pistacho: Chocolate blanco cremoso, un remolino de crema de pistacho y trozos crujientes." width="900" height="1124" loading="lazy"></span>
+            </button>
+            <h3 class="flavor-name">Cremino de pistacho</h3>
+            <p class="flavor-desc">Chocolate blanco cremoso, un remolino de crema de pistacho y trozos crujientes.</p>
+          </li>
+          <li class="flavor-card" data-flavor="1">
+            <button type="button" class="flavor-btn" data-open="1" aria-label="Ver Oreo en grande">
+              <span class="flavor-frame"><img src="img/oreo.jpg" alt="Oreo: Cremoso helado de vainilla con trozos generosos de galleta Oreo." width="900" height="1124" loading="lazy"></span>
+            </button>
+            <h3 class="flavor-name">Oreo</h3>
+            <p class="flavor-desc">Cremoso helado de vainilla con trozos generosos de galleta Oreo.</p>
+          </li>
+          <li class="flavor-card" data-flavor="2">
+            <button type="button" class="flavor-btn" data-open="2" aria-label="Ver Yogur de plátano con mango en grande">
+              <span class="flavor-frame"><img src="img/yogur-platano-mango.jpg" alt="Yogur de plátano con mango: Cremoso helado de yogur de plátano con salsa de mango." width="900" height="1118" loading="lazy"></span>
+            </button>
+            <h3 class="flavor-name">Yogur de plátano con mango</h3>
+            <p class="flavor-desc">Cremoso helado de yogur de plátano con salsa de mango.</p>
+          </li>
+          <li class="flavor-card" data-flavor="3">
+            <button type="button" class="flavor-btn" data-open="3" aria-label="Ver Mango en grande">
+              <span class="flavor-frame"><img src="img/mango.jpg" alt="Mango: Cremoso helado de mango natural." width="900" height="1121" loading="lazy"></span>
+            </button>
+            <h3 class="flavor-name">Mango</h3>
+            <p class="flavor-desc">Cremoso helado de mango natural.</p>
+          </li>
+        </ul>
+        <div class="flavor-dots" data-flavor-dots aria-hidden="true"></div>
+      </div>
+
+      <div class="lightbox" data-lightbox role="dialog" aria-modal="true" aria-labelledby="lb-title" hidden>
+        <div class="lb-backdrop" data-lb-close></div>
+        <div class="lb-body">
+          <figure class="lb-figure"><img class="lb-img" data-lb-img alt=""></figure>
+          <div class="lb-text">
+            <p class="lb-count" data-lb-count></p>
+            <h3 id="lb-title" data-lb-title></h3>
+            <p data-lb-desc></p>
+            <div class="lb-nav">
+              <button type="button" class="lb-btn" data-lb-prev aria-label="Sabor anterior"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5"/></svg></button>
+              <button type="button" class="lb-btn" data-lb-next aria-label="Sabor siguiente"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg></button>
+              <a class="btn btn-primary" href="#reservas" data-lb-reserve>Reservar mesa</a>
+            </div>
+          </div>
+          <button type="button" class="lb-close" data-lb-close aria-label="Cerrar"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button>
+        </div>
+      </div>
+    </section>
+
     <section id="reservas" class="view reserve" data-view="reservas" aria-labelledby="reserve-title" hidden>
       <div class="reserve-head">
         <h2 id="reserve-title">Reserva tu mesa</h2>
