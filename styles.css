@@ -683,3 +683,15 @@ body.menu-open .logo img { filter: brightness(0) invert(1); }
   .js .hero-photo, .js .hero-photo img { animation: fade 400ms ease both; }
   .js .cone-stage.hero-photo.is-floating .cone { animation: none; }
 }
+
+/* Real map screenshot */
+img.map-art { object-fit: cover; object-position: 44% 48%; background: var(--wafer); }
+.map-label { align-items: center; }
+.map-btn { display: inline-flex; align-items: center; gap: .45rem; background: var(--ink); color: #fff; padding: .6rem 1rem; border-radius: 999px; font-weight: 600; transition: transform 160ms var(--ease-out); }
+.map-card:active .map-btn { transform: scale(0.97); }
+@media (max-width: 640px) {
+  .map-art { aspect-ratio: 1 / 1; }
+  .map-label { left: auto; right: .75rem; bottom: .75rem; padding: 0; background: none; box-shadow: none; }
+  .map-label > span:first-child { display: none; }
+  .map-btn { box-shadow: 0 8px 20px -8px rgb(0 0 0 / .5); }
+}
